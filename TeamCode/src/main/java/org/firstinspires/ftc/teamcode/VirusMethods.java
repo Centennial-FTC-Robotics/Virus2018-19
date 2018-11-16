@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 
 public class VirusMethods extends VirusHardware {
+    //sets side to certain position
     public void slides(int position){
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -19,10 +20,24 @@ public class VirusMethods extends VirusHardware {
             slideRight.setPower(0);
         }
     }
+    //set slide power
     public void slidePower(double power){
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideLeft.setPower(power);
         slideRight.setPower(power);
+    }
+    //set hinge position
+    public void hinge(int position){
+        hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hinge.setPower(-1);
+        if (!hinge.isBusy()) {
+            hinge.setPower(0);
+        }
+    }
+    //set hinge power
+    public void hingePower(double power){
+        hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hinge.setPower(power);
     }
 }
