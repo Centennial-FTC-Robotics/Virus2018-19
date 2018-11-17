@@ -1,7 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+// hardware
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+
+// sensors & sensorSetup
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * Created by keert on 10/26/2018.
@@ -15,6 +25,13 @@ public abstract class VirusHardware extends LinearOpMode {
     DcMotor slideLeft;
     DcMotor slideRight;
     DcMotor hinge;
+
+    Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
+    BNO055IMU imu;
+    double initialHeading;
+    double initialPitch;
+    double initialRoll;
+
     @Override
     public void runOpMode() throws InterruptedException {
 //        lmotor0 = hardwareMap.dcMotor.get("lmotor0");
@@ -25,6 +42,8 @@ public abstract class VirusHardware extends LinearOpMode {
 
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
 //        rmotor0.setDirection(DcMotor.Direction.REVERSE);
 //        rmotor1.setDirection(DcMotor.Direction.REVERSE);
@@ -49,6 +68,9 @@ public abstract class VirusHardware extends LinearOpMode {
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        initialHeading = orientation.firstAngle;
+        initialPitch = orientation.secondAngle;
+        initialRoll = orientation.thirdAngle;
 
         waitForStart();
     }
