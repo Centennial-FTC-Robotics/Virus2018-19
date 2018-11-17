@@ -205,7 +205,7 @@ public class VirusMethods extends VirusHardware {
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at max extension, only move if retracting
         if (slideLeft.getCurrentPosition() <= -7300 || slideRight.getCurrentPosition() <= -7300) {
-            if (power < 0) {
+            if (power > 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
             }
@@ -215,8 +215,8 @@ public class VirusMethods extends VirusHardware {
             }
         }
         //if completely retracted, only move if extending
-        else if (hinge.getCurrentPosition() >= 0){
-            if (power > 0) {
+        else if (slideLeft.getCurrentPosition() >= 0 || slideRight.getCurrentPosition() >= 0){
+            if (power < 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
             }
@@ -243,7 +243,7 @@ public class VirusMethods extends VirusHardware {
     public void hingePower(double power){
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
-        if (hinge.getCurrentPosition() >= 1200) {
+        if (hinge.getCurrentPosition() >= 1100) {
             if (power < 0) {
                 hinge.setPower(power);
             }

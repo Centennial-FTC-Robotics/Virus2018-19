@@ -17,8 +17,11 @@ public class Drive extends VirusMethods {
 //            rmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
 //            lmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
 //            rmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
-            slidePower(gamepad2.left_stick_y);
-            hingePower(-gamepad2.right_stick_y);
+            if(!gamepad2.a && !gamepad2.b){
+                slidePower(gamepad2.left_stick_y);
+            }
+
+            hingePower(-0.75* gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
             if(gamepad2.b){
                 slides(-3500);
