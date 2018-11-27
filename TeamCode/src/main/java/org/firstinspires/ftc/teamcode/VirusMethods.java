@@ -2,20 +2,31 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 /**
  * Created by keert on 10/26/2018.
@@ -23,15 +34,31 @@ import java.util.List;
 
 public class VirusMethods extends VirusHardware {
     //motors
-//    private final DcMotor[] leftDriveMotors = {lmotor0, lmotor1};
-//    private final DcMotor[] rightDriveMotors = {rmotor0, rmotor1};
-//    private final DcMotor[] driveMotors = {lmotor0, lmotor1, rmotor0, rmotor1};
+    private final DcMotor[] leftDriveMotors = {lmotor0, lmotor1};
+    private final DcMotor[] rightDriveMotors = {rmotor0, rmotor1};
+    private final DcMotor[] driveMotors = {lmotor0, lmotor1, rmotor0, rmotor1};
 
-    //for reference
-    private final int driveTicksPerRev = 560; //change this to value of our motor
+    // motor movement
+    private final int driveTicksPerRev = 560;
     private final int driveSprocket = 24;
     private final int wheelSprocket = 22;
     private final int wheelDiameterIn = 4;
+
+    // slides
+    private int encodersMovedStronk;
+    private int encodersMovedSpeed;
+    private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
+    private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
+    private double slideInchPerStrInch = 1.0; // replace w/ actual value
+
+    // simple conversion
+    private static final float mmPerInch        = 25.4f;
+    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight   = (6) * mmPerInch;
+
+    // turn
+    public static final int RIGHT = 1;
+    public static final int LEFT = -1;
 
     //tensor flow and vuforia stuff
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -40,6 +67,29 @@ public class VirusMethods extends VirusHardware {
     private static final String VUFORIA_KEY = "AQmuIUP/////AAAAGR6dNDzwEU07h7tcmZJ6YVoz5iaF8njoWsXQT5HnCiI/oFwiFmt4HHTLtLcEhHCU5ynokJgYSvbI32dfC2rOvqmw81MMzknAwxKxMitf8moiK62jdqxNGADODm/SUvu5a5XrAnzc7seCtD2/d5bAIv1ZuseHcK+oInFHZTi+3BvhbUyYNvnVb0tQEAv8oimzjiQW18dSUcEcB/d6QNGDvaDHpxuRCJXt8U3ShJfBWWQEex0Vp6rrb011z8KxU+dRMvGjaIy+P2p5GbWXGJn/yJS9oxuwDn3zU6kcQoAwI7mUgAw5zBGxxM+P35DoDqiOja6ST6HzDszHxClBm2dvTRP7C4DEj0gPkhX3LtBgdolt";
     private VuforiaLocalizer vuforia; //Vuforia localization engine
     private TFObjectDetector tfod; //Tensor Flow Object Detection engine
+    private int cameraMonitorViewId;
+
+    private VuforiaTrackables targetsRoverRuckus;
+    private VuforiaLocalizer.Parameters parameters;
+    private OpenGLMatrix lastLocation = null;
+    private boolean targetVisible = false;
+    private List<VuforiaTrackable> allTrackables;
+
+    //distance calculation
+    @Override
+    public void runOpMode() throws InterruptedException {
+        super.runOpMode();
+        initializeIMU();
+        Thread.sleep(1000);
+        updateOrientation();
+        initialHeading = orientation.firstAngle;
+        initialRoll = orientation.secondAngle;
+        initialPitch = orientation.thirdAngle;
+        encodersMovedSpeed = 0;
+        encodersMovedSpeed = 0;
+        initVision();
+        //need to run initVuforia and initTfod
+    }
 
     /* -------------- Initialization -------------- */
 
@@ -58,6 +108,17 @@ public class VirusMethods extends VirusHardware {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
+
+    private void navTargetInit() {
+
+        cameraMonitorViewId =  hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.useExtendedTracking = true;
+        allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsRoverRuckus);
+        targetsRoverRuckus.activate();
     }
 
     public void autoInit() {
@@ -97,39 +158,38 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void initAutoMotors() {
-
         slidePower(1);
     }
 
      /* -------------- Status Methods -------------- */
 
-//    public boolean motorsBusy() {
-//        boolean busy = false;
-//        for (DcMotor motor : driveMotors) {
-//            if (motor.isBusy()) {
-//                busy = true;
-//            }
-//        }
-//        return busy;
-//    }
+    public boolean motorsBusy() {
+        boolean busy = false;
+        for (DcMotor motor : driveMotors) {
+            if (motor.isBusy()) {
+                busy = true;
+            }
+        }
+        return busy;
+    }
 
     public double getRawZ() {
-
+        updateOrientation();
         return orientation.firstAngle;
     }
 
     public double getRawY() {
-
+        updateOrientation();
         return orientation.thirdAngle;
     }
 
     public double getRawX() {
-
+        updateOrientation();
         return orientation.secondAngle;
     }
 
     public OpenGLMatrix getRotation() {
-
+        updateOrientation();
         return orientation.getRotationMatrix();
     }
 
@@ -150,14 +210,40 @@ public class VirusMethods extends VirusHardware {
         return 0;
     }
 
+    public int getHingeAngle() {
+
+        return hinge.getCurrentPosition() * (2240 / 90);
+    }
+
+    public double getSlideExtendInch() {
+
+        double strInches = (encodersMovedSpeed * inchesPerEncoderSpeed) + (encodersMovedStronk * inchesPerEncoderStronk);
+
+        return (strInches * slideInchPerStrInch);
+    }
+
     /* -------------- Processing -------------- */
 
-    private double getAngleDist(double angle, double currentAngle) {
+    public double getAngleDist(double targetAngle, double currentAngle) {
 
-        double referenceAngle = (currentAngle + 180 > 360) ? (currentAngle - 180) : (currentAngle + 180);
-        double distance = 180 - Math.abs(referenceAngle - angle);
+        double angleDifference = currentAngle - targetAngle;
+        if (Math.abs(angleDifference) > 180) {
+            angleDifference = 360 - Math.abs(angleDifference);
+        } else {
+            angleDifference = Math.abs(angleDifference);
+        }
 
-        return distance;
+        return angleDifference;
+    }
+
+    public int getAngleDir(double targetAngle, double currentAngle) {
+
+        double angleDifference = currentAngle - targetAngle;
+        int angleDir = (int) (angleDifference / Math.abs(angleDifference));
+        if (Math.abs(angleDifference) > 180) {
+            angleDir *= -1;
+        }
+        return angleDir;
     }
 
     private int convertInchToEncoder(float dist) {
@@ -182,15 +268,15 @@ public class VirusMethods extends VirusHardware {
     /* -------------- Movement -------------- */
 
     //movement based on speeds
-//    public void runDriveMotors(float leftSpeed, float rightSpeed) {
-//        lmotor0.setPower(Range.clip(leftSpeed, -1, 1));
-//        lmotor1.setPower(Range.clip(leftSpeed, -1, 1));
-//        rmotor0.setPower(Range.clip(rightSpeed, -1, 1));
-//        rmotor1.setPower(Range.clip(rightSpeed, -1, 1));
-//    }
+    public void runDriveMotors(float leftSpeed, float rightSpeed) {
+        lmotor0.setPower(Range.clip(leftSpeed, -1, 1));
+        lmotor1.setPower(Range.clip(leftSpeed, -1, 1));
+        rmotor0.setPower(Range.clip(rightSpeed, -1, 1));
+        rmotor1.setPower(Range.clip(rightSpeed, -1, 1));
+    }
 
     //sets side to certain position
-    public void slides(int position){
+    public void slides(int position) {
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         position = Range.clip(position, -7300, 0);
@@ -199,6 +285,7 @@ public class VirusMethods extends VirusHardware {
         slideLeft.setPower(1);
         slideRight.setPower(1);
     }
+
     //set slide power
     public void slidePower(double power){
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -266,52 +353,109 @@ public class VirusMethods extends VirusHardware {
         }
     }
     //currently in inches
-//    public void move(float distance) {
-//        //converting from linear distance -> wheel rotations ->
-//        // motor rotations -> encoder counts, then round
-//
-//        int position = convertInchToEncoder(distance);
-//
-//        for (DcMotor motor : driveMotors) {
-//            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            motor.setTargetPosition(position);
-//        }
-//        waitForMotors();
-//        for (DcMotor motor : driveMotors) {
-//            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        }
-//    }
-//
-//    public void turn(double angle, double speed) {
-//
-//        // normalize the angle
-//        angle = AngleUnit.normalizeDegrees(angle);
-//
+    public void move(float distance) {
+        //converting from linear distance -> wheel rotations ->
+        // motor rotations -> encoder counts, then round
+
+        int position = convertInchToEncoder(distance);
+
+        for (DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motor.setTargetPosition(position);
+        }
+        waitForMotors();
+        for (DcMotor motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
+    public void turn(double angle, double speed) {
+
+        // normalize the angle
+        angle = AngleUnit.normalizeDegrees(angle);
+
+        double currentAngle = getRotationinDimension('Z');
+        double referenceAngle = (currentAngle + 180 > 360) ? (currentAngle - 180) : (currentAngle + 180);
+        double distance = 180 - Math.abs(referenceAngle - angle);
+        int direction =(int) (((referenceAngle - angle) == 0) ? 1 : (referenceAngle - angle) / Math.abs(referenceAngle - angle)); // -1 is right, 1 is left
+        double turnRate = (distance * speed) / 90;
+
+        while (Math.abs(getRotationinDimension('Z') - angle) > 1) {
+
+            runDriveMotors((float) (-direction * (turnRate)), (float) (direction * (turnRate)));
+            distance = getAngleDist(angle, getRotationinDimension('Z'));
+            turnRate = (distance * speed) / 90;
+
+        }
+
+        runDriveMotors(0,0);
+    }
+
+    public void turnRelative(double targetChange, double speed) {
+
+        turnAbsolute(AngleUnit.normalizeDegrees(getRotationinDimension('Z') + targetChange), speed);
+    }
+
+    public void turnAbsolute(double targetAngle, double speed) {
+        double currentAngle = getRotationinDimension('Z');
+        int direction;
+        if (targetAngle != currentAngle) {
+
+            double angleDifference = getAngleDist(targetAngle, currentAngle);
+            direction = getAngleDir(targetAngle, currentAngle);
+
+            double turnRate = (angleDifference * speed) / 90;
+
+            while (opModeIsActive() && angleDifference > 1) {
+                runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
+                angleDifference = getAngleDist(targetAngle, getRotationinDimension('Z'));
+                direction = getAngleDir(targetAngle, getRotationinDimension(('Z')));
+                turnRate = (angleDifference * speed) / 90;
+                telemetry.addData("angleDifference: ", angleDifference);
+                telemetry.addData("currentAngle: ", getRotationinDimension('Z'));
+                telemetry.update();
+            }
+
+            runDriveMotors(0, 0);
+        }
+    }
+
+//    public void turn2(vdouble targetAngle, double speed) {
 //        double currentAngle = getRotationinDimension('Z');
-//        double referenceAngle = (currentAngle + 180 > 360) ? (currentAngle - 180) : (currentAngle + 180);
-//        double distance = 180 - Math.abs(referenceAngle - angle);
-//        int direction =(int) (((referenceAngle - angle) == 0) ? 1 : (referenceAngle - angle) / Math.abs(referenceAngle - angle)); // -1 is right, 1 is left
-//        double turnRate = (distance * speed) / 90;
+//        double angleDifference = currentAngle - targetAngle;
 //
-//        while (Math.abs(getRotationinDimension('Z') - angle) > 1) {
-//
-//            runDriveMotors((float) (-direction * (turnRate)), (float) (direction * (turnRate)));
-//            distance = getAngleDist(angle, getRotationinDimension('Z'));
-//            turnRate = (distance * speed) / 90;
-//
-//        }
-//
-//        runDriveMotors(0,0);
 //    }
+
     /* -------------- Procedure -------------- */
 
-//    public void waitForMotors() {
-//        while (motorsBusy()) {
-//        }
-//    }
+    public void waitForMotors() {
+        while (opModeIsActive() && motorsBusy()) {
+        }
+    }
+
+    public void waitTime(int time){
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void updateOrientation (){
         orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
     }
+
+    public void ejectTeamMarker() {
+
+
+    }
+
+    public void slidesBrake() {
+
+        slideLeft.setPower(0);
+        slideRight.setPower(0);
+    }
+
         /* -------------- Technical Innovation -------------- */
 
     //returns left, right, or center based on position of gold
@@ -377,5 +521,40 @@ public class VirusMethods extends VirusHardware {
 
         //added:
         return goldPosition;
+    }
+
+    public void updateNavTargets() {
+
+        // check all the trackable target to see which one (if any) is visible.
+        targetVisible = false;
+        for (VuforiaTrackable trackable : allTrackables) {
+            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
+                telemetry.addData("Visible Target", trackable.getName());
+                targetVisible = true;
+
+                // getUpdatedRobotLocation() will return null if no new information is available since
+                // the last time that call was made, or if the trackable is not currently visible.
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+                break;
+            }
+        }
+
+        // Provide feedback as to where the robot is located (if we know).
+        if (targetVisible) {
+            // express position (translation) of robot in inches.
+            VectorF translation = lastLocation.getTranslation();
+            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+
+            // express the rotation of the robot in degrees.
+            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+        } else {
+            telemetry.addData("Visible Target", "none");
+        }
+        telemetry.update();
     }
 }

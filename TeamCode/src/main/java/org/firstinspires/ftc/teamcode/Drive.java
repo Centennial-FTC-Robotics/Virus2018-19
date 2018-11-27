@@ -8,15 +8,15 @@ import com.qualcomm.robotcore.util.Range;
 //0 is front, 1 is back
 //l means left, r means right
 public class Drive extends VirusMethods {
-
+    String goldPos;
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        waitForStart();
         while(opModeIsActive()){
-            telemetry.update();
-//            lmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
-//            rmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
-//            lmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
-//            rmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
+            lmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
+            rmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
+            lmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
+            rmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
             if(!gamepad2.a && !gamepad2.b){
                 slidePower(gamepad2.left_stick_y);
             }
@@ -30,10 +30,11 @@ public class Drive extends VirusMethods {
             if(gamepad2.a){
                 slides(0);
             }
+            goldPos = autoFindGold();
             telemetry.addData("Left slide",  slideLeft.getCurrentPosition());
             telemetry.addData("Right slide",  slideRight.getCurrentPosition());
-            telemetry.addData("Hinge",  hinge.getCurrentPosition());
-
+            telemetry.addData("Gold Position",  goldPos);
+            telemetry.update();
             idle();
         }
     }
