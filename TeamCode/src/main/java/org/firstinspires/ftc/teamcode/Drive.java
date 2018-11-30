@@ -30,10 +30,10 @@ public class Drive extends VirusMethods {
             if(gamepad2.a){
                 slides(0);
             }
-//            goldPos = autoFindGold();
+            goldPos = autoFindGold();
             telemetry.addData("Left slide",  slideLeft.getCurrentPosition());
             telemetry.addData("Right slide",  slideRight.getCurrentPosition());
-//            telemetry.addData("Gold Position",  goldPos);
+            telemetry.addData("Gold Position",  goldPos);
             telemetry.update();
             idle();
         }
