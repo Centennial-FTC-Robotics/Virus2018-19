@@ -8,31 +8,43 @@ import com.qualcomm.robotcore.util.Range;
 //0 is front, 1 is back
 //l means left, r means right
 public class Drive extends VirusMethods {
+    double theta;
+    double x;
+    double y;
+    double x2;
+    double y2;
     String goldPos;
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         waitForStart();
         while(opModeIsActive()){
+            //original drive system
             lmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
             rmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
             lmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
             rmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
-            if(!gamepad2.a && !gamepad2.b){
-                slidePower(gamepad2.left_stick_y);
-            }
+//            x = gamepad1.left_stick_x;
+//            y = gamepad1.left_stick_y;
+//            theta = -Math.atan(y/x);
+//            x2 = x*Math.cos(theta)-y*Math.sin(theta);
+//            y2 = x*Math.sin(theta)+y*Math.cos(theta);
+//            runDriveMotors((float)x2,(float)y2);
+//            if(!gamepad2.a && !gamepad2.b){
+//                slidePower(gamepad2.left_stick_y);
+//            }
 
             hingePower(-0.75* gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
-            if(gamepad2.b){
-                slides(-3500);
-            }
-            //retract slides
-            if(gamepad2.a){
-                slides(0);
-            }
+//            if(gamepad2.b){
+//                slides(-3500);
+//            }
+//            //retract slides
+//            if(gamepad2.a){
+//                slides(0);
+//            }
             goldPos = autoFindGold();
-            telemetry.addData("Left slide",  slideLeft.getCurrentPosition());
-            telemetry.addData("Right slide",  slideRight.getCurrentPosition());
+            telemetry.addData("x2",  x2);
+            telemetry.addData("y2",  y2);
             telemetry.addData("Gold Position",  goldPos);
             telemetry.update();
             idle();
