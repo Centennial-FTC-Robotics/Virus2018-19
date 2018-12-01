@@ -11,4 +11,3 @@ public class BlueAuto1 extends VirusMethods {
         }
     }
 }
-
