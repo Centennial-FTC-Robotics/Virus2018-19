@@ -38,6 +38,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -90,11 +91,25 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() == 3) {
+                        if (updatedRecognitions.size() == 2) {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
-
+                            ArrayList<Float> heights = new ArrayList<Float>();
+                            ArrayList<Float> widths = new ArrayList<Float>();
+                            //exclude detected object that are too big
+                            ArrayList<Recognition> toRemoveIndex = new ArrayList<Recognition>();
+                            for(int i = 0; i < updatedRecognitions.size(); i ++){
+                                //height < 200
+                                //width < 200
+                                Recognition r = updatedRecognitions.get(i);
+                                if(r.getWidth() > 200 || r.getHeight() > 200){
+                                    toRemoveIndex.add(r);
+                                }
+                            }
+                            for(Recognition r: toRemoveIndex){
+                                updatedRecognitions.remove(r);
+                            }
                             //gets x positions for each mineral detected
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
@@ -104,6 +119,12 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                                 } else {
                                     silverMineral2X = (int) recognition.getBottom();
                                 }
+                                heights.add(recognition.getHeight());
+                                widths.add(recognition.getWidth());
+                            }
+                            for(int i = 0; i < heights.size(); i++){
+                                telemetry.addData("Height "+i, heights.get(i));
+                                telemetry.addData("Width "+i, widths.get(i));
                             }
                             telemetry.addData("G Mineral Position", goldMineralX);
                             telemetry.addData("S1 Mineral Position", silverMineral1X);

@@ -367,6 +367,28 @@ public class VirusMethods extends VirusHardware {
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
+    public void move(float distance, float speed) {
+        //converting from linear distance -> wheel rotations ->
+        // motor rotations -> encoder counts, then round
+        for (int i = 0; i < driveMotors.length; i++) {
+            driveMotors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+        waitForMotors();
+
+        int position = convertInchToEncoder(distance);
+
+        for (int i = 0; i < driveMotors.length; i++) {
+            driveMotors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            driveMotors[i].setTargetPosition(-position);
+            driveMotors[i].setPower(speed);
+        }
+        waitForMotors();
+        runDriveMotors(0, 0);
+        for (int i = 0; i < driveMotors.length; i++) {
+            driveMotors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
 
     public void turn(double angle, double speed) {
 
