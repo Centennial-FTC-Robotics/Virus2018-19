@@ -1,10 +1,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "CraterAuto", group = "TeleOp")
+@Autonomous(name = "CraterAuto", group = "Autonomous")
 
 public class CraterAuto extends VirusMethods {
 
@@ -24,8 +25,12 @@ public class CraterAuto extends VirusMethods {
             telemetry.update();
             goldPos = autoFindGold();
         }
-        if (goldPos.equals("bad")) {
-            goldPos = "Left";
+        if (goldPos.equals("Left")) {
+
+        }else if(goldPos.equals("Center")){
+
+        }else if(goldPos.equals("Right")){
+
         }
 
 //        if (goldPos.equals("Left")) {
