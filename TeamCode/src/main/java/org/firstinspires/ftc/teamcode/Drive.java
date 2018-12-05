@@ -13,6 +13,7 @@ public class Drive extends VirusMethods {
     double slowSpeed = 0.4;
     float leftSpeed;
     float rightSpeed;
+    float factor;
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         waitForStart();
@@ -20,19 +21,8 @@ public class Drive extends VirusMethods {
             //original drive system
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1);
-            float addLeft = 0;
-            float addRight = 0;
-            if(leftSpeed > 0){
-                addLeft = (float)(-(0.3*gamepad1.left_trigger)+(0.3*gamepad1.right_trigger));
-            }else if(leftSpeed < 0){
-                addLeft = (float)((0.3*gamepad1.left_trigger)+(-0.3*gamepad1.right_trigger));
-            }
-            if(rightSpeed > 0){
-                addRight = (float)(-(0.3*gamepad1.left_trigger)+(0.3*gamepad1.right_trigger));
-            }else if(rightSpeed < 0){
-                addRight = (float)((0.3*gamepad1.left_trigger)+(-0.3*gamepad1.right_trigger));
-            }
-            runDriveMotors( leftSpeed + addLeft, rightSpeed + addRight);
+            factor = (float) (0.7 + 0.3*gamepad1.right_trigger -0.2*gamepad2.left_trigger);
+            runDriveMotors(factor*leftSpeed, factor*rightSpeed);
 //            lmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
 //            rmotor0.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1));
 //            lmotor1.setPower(Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1));
