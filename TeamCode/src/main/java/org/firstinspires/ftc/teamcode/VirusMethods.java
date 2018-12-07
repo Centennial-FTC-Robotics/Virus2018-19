@@ -133,15 +133,20 @@ public class VirusMethods extends VirusHardware {
         waitForStart();
     }
 
-    public void initializeIMU(){
+    public void initializeIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
+        while (opModeIsActive()&&!imu.isGyroCalibrated());
+        updateOrientation();
+        initialHeading = orientation.firstAngle;
+        initialRoll = orientation.secondAngle;
+        initialPitch = orientation.thirdAngle;
     }
 
     public void initVision() {
@@ -274,15 +279,15 @@ public class VirusMethods extends VirusHardware {
         rmotor1.setPower(Range.clip(rightSpeed, -1, 1));
     }
 
-    //sets side to certain position
+    //sets slide to certain position
     public void slides(int position) {
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         position = Range.clip(position, -7300, 0);
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
-        slideLeft.setPower(1);
-        slideRight.setPower(1);
+        slideLeft.setPower(0.7);
+        slideRight.setPower(0.7);
     }
 
     //set slide power
@@ -390,27 +395,6 @@ public class VirusMethods extends VirusHardware {
         }
     }
 
-    public void turn(double angle, double speed) {
-
-        // normalize the angle
-        angle = AngleUnit.normalizeDegrees(angle);
-
-        double currentAngle = getRotationinDimension('Z');
-        double referenceAngle = (currentAngle + 180 > 360) ? (currentAngle - 180) : (currentAngle + 180);
-        double distance = 180 - Math.abs(referenceAngle - angle);
-        int direction =(int) (((referenceAngle - angle) == 0) ? 1 : (referenceAngle - angle) / Math.abs(referenceAngle - angle)); // -1 is right, 1 is left
-        double turnRate = (distance * speed) / 90;
-
-        while (Math.abs(getRotationinDimension('Z') - angle) > 1) {
-
-            runDriveMotors((float) (-direction * (turnRate)), (float) (direction * (turnRate)));
-            distance = getAngleDist(angle, getRotationinDimension('Z'));
-            turnRate = (distance * speed) / 90;
-
-        }
-
-        runDriveMotors(0,0);
-    }
 
     public void turnRelative(double targetChange, double speed) {
 
@@ -440,6 +424,7 @@ public class VirusMethods extends VirusHardware {
             runDriveMotors(0, 0);
         }
     }
+
 
 //    public void turn2(vdouble targetAngle, double speed) {
 //        double currentAngle = getRotationinDimension('Z');
@@ -525,15 +510,14 @@ public class VirusMethods extends VirusHardware {
                 }
             }
         }
-
-        if (tfod != null) {
-            tfod.shutdown();
-        }
-
         //added:
         return goldPosition;
     }
-
+    public void closeTfod(){
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+    }
     public void updateNavTargets() {
 
         // check all the trackable target to see which one (if any) is visible.

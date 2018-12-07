@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 
 // sensors & sensorSetup
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -25,6 +27,7 @@ public abstract class VirusHardware extends LinearOpMode {
     DcMotor slideLeft;
     DcMotor slideRight;
     DcMotor hinge;
+    Servo marker;
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
     BNO055IMU imu;
@@ -44,6 +47,8 @@ public abstract class VirusHardware extends LinearOpMode {
         slideRight = hardwareMap.dcMotor.get("slideRight");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        marker = hardwareMap.servo.get("marker");
 
         rmotor0.setDirection(DcMotor.Direction.REVERSE);
         rmotor1.setDirection(DcMotor.Direction.REVERSE);
@@ -71,6 +76,9 @@ public abstract class VirusHardware extends LinearOpMode {
         initialHeading = orientation.firstAngle;
         initialPitch = orientation.secondAngle;
         initialRoll = orientation.thirdAngle;
+
+        //all servo starting positions go here
+        marker.setPosition(0);
 
         waitForStart();
     }
