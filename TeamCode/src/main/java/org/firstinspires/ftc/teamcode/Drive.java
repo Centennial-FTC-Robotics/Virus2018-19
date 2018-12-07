@@ -59,7 +59,14 @@ public class Drive extends VirusMethods {
             if(gamepad2.left_bumper){
                 sweeper.setPower(-1);
             }
-
+            //ball mode
+            if(gamepad2.start){
+                sifter.setPosition(0);
+            }
+            //cube mode
+            if(gamepad2.back){
+                sifter.setPosition(1);
+            }
             telemetry.addData("Rotation X", getRotationinDimension('X'));
             telemetry.addData("Rotation Y", getRotationinDimension('Y'));
             telemetry.addData("Rotation Z", getRotationinDimension('Z'));
