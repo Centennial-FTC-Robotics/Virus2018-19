@@ -35,17 +35,28 @@ public class Drive extends VirusMethods {
             }
             //claw down
             if(gamepad2.dpad_down){
+                slides(-50);
+                if(hingeAngle() < 10)
+                    hinge(10);
+                hinge(10);
                 pivot1.setPosition(0);
                 pivot2.setPosition(1);
+                if(hingeAngle() < 10)
+                    hinge(0);
             }
             //claw up
             if(gamepad2.dpad_up){
+                slides(-50);
+                if(hingeAngle() < 10)
+                    hinge(10);
                 pivot1.setPosition(1);
                 pivot2.setPosition(0);
+                if(hingeAngle() < 10)
+                    hinge(0);
             }
             //enable slide lock
             if(gamepad2.right_trigger > 0){
-                slideLock.setPosition(1);
+                slideLock.setPosition(0.5);
             }
             //disable slide lock
             if(gamepad2.left_trigger > 0){
@@ -53,11 +64,11 @@ public class Drive extends VirusMethods {
             }
             //sweep in
             if(gamepad2.right_bumper){
-                sweeper.setPower(1);
-            }
-            //sweeper out
-            if(gamepad2.left_bumper){
                 sweeper.setPower(-1);
+            }else if(gamepad2.left_bumper){
+                sweeper.setPower( 1);
+            } else{
+                sweeper.setPower(0);
             }
             //ball mode
             if(gamepad2.start){
@@ -67,13 +78,13 @@ public class Drive extends VirusMethods {
             if(gamepad2.back){
                 sifter.setPosition(1);
             }
-            telemetry.addData("Rotation X", getRotationinDimension('X'));
-            telemetry.addData("Rotation Y", getRotationinDimension('Y'));
-            telemetry.addData("Rotation Z", getRotationinDimension('Z'));
-            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
-            telemetry.addData("Right slide", slideRight.getCurrentPosition());
-            telemetry.addData("Left motor", lmotor0.getCurrentPosition());
-            telemetry.addData("Right motor", rmotor0.getCurrentPosition());
+//            telemetry.addData("Rotation X", getRotationinDimension('X'));
+//            telemetry.addData("Rotation Y", getRotationinDimension('Y'));
+//            telemetry.addData("Rotation Z", getRotationinDimension('Z'));
+//            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
+//            telemetry.addData("Right slide", slideRight.getCurrentPosition());
+//            telemetry.addData("Left motor", lmotor0.getCurrentPosition());
+//            telemetry.addData("Right motor", rmotor0.getCurrentPosition());
             telemetry.update();
             idle();
 

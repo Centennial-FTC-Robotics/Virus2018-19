@@ -89,7 +89,7 @@ public abstract class VirusHardware extends LinearOpMode {
         initialRoll = orientation.thirdAngle;
 
         //all servo starting positions go here
-        marker.setPosition(0);
+        marker.setPosition(1);
         pivot1.setPosition(0);
         pivot2.setPosition(1);
         sifter.setPosition(0); //ball mode

@@ -322,6 +322,10 @@ public class VirusMethods extends VirusHardware {
             slideRight.setPower(power);
         }
     }
+    //get hinge position
+    public int hingeAngle(){
+        return (int) ((hinge.getCurrentPosition()*90)/1200);
+    }
     //set hinge position
     public void hinge(double angle) {
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
