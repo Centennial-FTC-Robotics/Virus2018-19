@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 
 // sensors & sensorSetup
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -25,6 +27,10 @@ public abstract class VirusHardware extends LinearOpMode {
     DcMotor slideLeft;
     DcMotor slideRight;
     DcMotor hinge;
+    DcMotor sweeper;
+    Servo slideLock;
+    Servo pivot1, pivot2;
+
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
     BNO055IMU imu;
@@ -39,6 +45,10 @@ public abstract class VirusHardware extends LinearOpMode {
         rmotor0 = hardwareMap.dcMotor.get("rmotor0");
         rmotor1 = hardwareMap.dcMotor.get("rmotor1");
         hinge = hardwareMap.dcMotor.get("hinge");
+        slideLock = hardwareMap.servo.get("slideLock");
+        pivot1 = hardwareMap.servo.get("pivot1");
+        pivot2 = hardwareMap.servo.get("pivot2");
+        sweeper = hardwareMap.dcMotor.get("sweeper");
 
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
@@ -67,6 +77,11 @@ public abstract class VirusHardware extends LinearOpMode {
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        pivot1.setPosition(0);
+        pivot2.setPosition(1);
+
+        sweeper.setPower(0);
 
         initialHeading = orientation.firstAngle;
         initialPitch = orientation.secondAngle;

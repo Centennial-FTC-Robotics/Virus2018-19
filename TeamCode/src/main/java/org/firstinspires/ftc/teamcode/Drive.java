@@ -33,10 +33,11 @@ public class Drive extends VirusMethods {
 //            x2 = x*Math.cos(theta)-y*Math.sin(theta);
 //            y2 = x*Math.sin(theta)+y*Math.cos(theta);
 //            runDriveMotors((float)x2,(float)y2);
+            //if not buttons pressed, set slides to joystick
             if(!gamepad2.a && !gamepad2.b){
                 slidePower(gamepad2.left_stick_y);
             }
-
+            //hinge follows joystick
             hingePower(-0.75* gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
             if(gamepad2.b){
@@ -45,6 +46,32 @@ public class Drive extends VirusMethods {
             //retract slides
             if(gamepad2.a){
                 slides(0);
+            }
+            //claw down
+            if(gamepad2.dpad_down){
+                pivot1.setPosition(0);
+                pivot2.setPosition(1);
+            }
+            //claw up
+            if(gamepad2.dpad_up){
+                pivot1.setPosition(1);
+                pivot2.setPosition(0);
+            }
+            //enable slide lock
+            if(gamepad2.right_trigger > 0){
+                slideLock.setPosition(1);
+            }
+            //disable slide lock
+            if(gamepad2.left_trigger > 0){
+                slideLock.setPosition(0);
+            }
+            //sweep in
+            if(gamepad2.right_bumper){
+                sweeper.setPower(1);
+            }
+            //sweeper out
+            if(gamepad2.left_bumper){
+                sweeper.setPower(-1);
             }
             telemetry.addData("Rotation X", getRawX());
             telemetry.addData("Rotation Y", getRawY());
