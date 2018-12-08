@@ -88,6 +88,10 @@ public class VirusMethods extends VirusHardware {
         encodersMovedSpeed = 0;
         encodersMovedSpeed = 0;
         initVision();
+        //all servo starting positions go here
+        marker.setPosition(0);
+        intakePivot(false);
+        sifter.setPosition(0); //ball mode
         //need to run initVuforia and initTfod
     }
 
@@ -358,6 +362,30 @@ public class VirusMethods extends VirusHardware {
         //if in between 0 and 90 degrees, move however
         else {
             hinge.setPower(power);
+        }
+    }
+    //if true, intake pivots up, if false, then pivots down
+    public void intakePivot(boolean up){
+        double originalHinge = hingeAngle();
+        if (originalHinge < 10){
+            hinge(10);
+        }
+        int originalSlide = slideLeft.getCurrentPosition();
+        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
+            slides(-50);
+        }
+        if (up){
+            pivot1.setPosition(1);
+            pivot2.setPosition(0);
+        } else {
+            pivot1.setPosition(0);
+            pivot2.setPosition(1);
+        }
+        if (originalHinge < 10){
+            hinge(originalHinge);
+        }
+        if (originalSlide > -50) {
+            slides(originalSlide);
         }
     }
     //currently in inches

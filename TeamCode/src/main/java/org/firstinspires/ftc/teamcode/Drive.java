@@ -19,7 +19,7 @@ public class Drive extends VirusMethods {
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1);
             factor = (float) (0.7 + 0.3*gamepad1.right_trigger -0.5*gamepad2.left_trigger);
-            runDriveMotors(factor*leftSpeed, factor*rightSpeed);
+            runDriveMotors(leftSpeed, rightSpeed);
             if(!gamepad2.a && !gamepad2.b){
                 slidePower(gamepad2.left_stick_y);
             }
@@ -35,24 +35,11 @@ public class Drive extends VirusMethods {
             }
             //claw down
             if(gamepad2.dpad_down){
-                slides(-50);
-                if(hingeAngle() < 10)
-                    hinge(10);
-                hinge(10);
-                pivot1.setPosition(0);
-                pivot2.setPosition(1);
-                if(hingeAngle() < 10)
-                    hinge(0);
+                intakePivot(false);
             }
             //claw up
             if(gamepad2.dpad_up){
-                slides(-50);
-                if(hingeAngle() < 10)
-                    hinge(10);
-                pivot1.setPosition(1);
-                pivot2.setPosition(0);
-                if(hingeAngle() < 10)
-                    hinge(0);
+                intakePivot(true);
             }
             //enable slide lock
             if(gamepad2.right_trigger > 0){
@@ -63,11 +50,20 @@ public class Drive extends VirusMethods {
                 slideLock.setPosition(0);
             }
             //sweep in
-            if(gamepad2.right_bumper){
+//            if(gamepad2.right_bumper){
+//                sweeper.setPower(-1);
+//            }else if(gamepad2.left_bumper){
+//                sweeper.setPower( 1);
+//            } else{
+//                sweeper.setPower(0);
+//            }
+            if (gamepad2.right_bumper){
                 sweeper.setPower(-1);
-            }else if(gamepad2.left_bumper){
-                sweeper.setPower( 1);
-            } else{
+            }
+            if (gamepad2.left_bumper){
+                sweeper.setPower(1);
+            }
+            if (!gamepad2.right_bumper && !gamepad2.left_bumper){
                 sweeper.setPower(0);
             }
             //ball mode

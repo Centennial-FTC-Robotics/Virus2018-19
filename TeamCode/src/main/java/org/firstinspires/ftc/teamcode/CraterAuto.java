@@ -67,16 +67,15 @@ public class CraterAuto extends VirusMethods {
 
         //turn right, drop marker, turn back
         turnRelative(90,turnSpeed);
-        marker.setPosition(0);
-        waitTime(2000);
         marker.setPosition(1);
+        waitTime(2000);
+        marker.setPosition(0);
         turnAbsolute(-45,turnSpeed);
 
         //go to crater (4.5 ft), extend slides in
         move(54, moveSpeed);
         //IMPORTANT move the intake up
-        pivot1.setPosition(1);
-        pivot2.setPosition(0);
+        intakePivot(true);
         waitTime(1000);
         slides(-3600);
     }
