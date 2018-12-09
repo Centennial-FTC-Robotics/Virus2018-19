@@ -8,6 +8,7 @@ public class DepotAuto extends VirusMethods {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        initVision();
         //hanging:
         // initAutoMotors(); //keep motors running for hang
         //moveHinge(0);
@@ -65,9 +66,7 @@ public class DepotAuto extends VirusMethods {
 
         //turn right, drop marker, turn back
         turnRelative(90,turnSpeed);
-        marker.setPosition(1);
-        waitTime(2000);
-        marker.setPosition(0);
+        dropMarker();
         turnAbsolute(135,turnSpeed);
 
         //go to crater (4.5 ft), extend slides in

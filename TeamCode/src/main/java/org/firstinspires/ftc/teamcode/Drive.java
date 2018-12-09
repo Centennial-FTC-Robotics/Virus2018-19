@@ -18,9 +18,10 @@ public class Drive extends VirusMethods {
             //drive system
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1);
-            factor = (float) (0.7 + 0.3*gamepad1.right_trigger -0.5*gamepad2.left_trigger);
-            runDriveMotors(leftSpeed, rightSpeed);
+            factor = (float) (0.7 + 0.3*gamepad1.right_trigger -0.5*gamepad1.left_trigger);
+            runDriveMotors(factor*leftSpeed, factor*rightSpeed);
             if(!gamepad2.a && !gamepad2.b){
+
                 slidePower(gamepad2.left_stick_y);
             }
             //hinge follows joystick
@@ -49,38 +50,33 @@ public class Drive extends VirusMethods {
             if(gamepad2.left_trigger > 0){
                 slideLock.setPosition(0);
             }
-            //sweep in
-//            if(gamepad2.right_bumper){
-//                sweeper.setPower(-1);
-//            }else if(gamepad2.left_bumper){
-//                sweeper.setPower( 1);
-//            } else{
-//                sweeper.setPower(0);
-//            }
-            if (gamepad2.right_bumper){
+            //sweepers
+            if(gamepad2.right_bumper){
+                //sweep in
                 sweeper.setPower(-1);
-            }
-            if (gamepad2.left_bumper){
+            }else if(gamepad2.left_bumper){
+                //sweep out
                 sweeper.setPower(1);
-            }
-            if (!gamepad2.right_bumper && !gamepad2.left_bumper){
-                sweeper.setPower(0);
+            } else{
+                //idle, sweep in slowly
+                sweeper.setPower(-0.3);
             }
             //ball mode
-            if(gamepad2.start){
-                sifter.setPosition(0);
-            }
-            //cube mode
-            if(gamepad2.back){
+            if(gamepad2.dpad_right){
                 sifter.setPosition(1);
             }
-//            telemetry.addData("Rotation X", getRotationinDimension('X'));
-//            telemetry.addData("Rotation Y", getRotationinDimension('Y'));
-//            telemetry.addData("Rotation Z", getRotationinDimension('Z'));
-//            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
-//            telemetry.addData("Right slide", slideRight.getCurrentPosition());
-//            telemetry.addData("Left motor", lmotor0.getCurrentPosition());
-//            telemetry.addData("Right motor", rmotor0.getCurrentPosition());
+            //cube mode
+            if(gamepad2.dpad_left){
+                sifter.setPosition(0);
+            }
+            telemetry.addData("Rotation X", getRotationinDimension('X'));
+            telemetry.addData("Rotation Y", getRotationinDimension('Y'));
+            telemetry.addData("Rotation Z", getRotationinDimension('Z'));
+            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
+            telemetry.addData("Right slide", slideRight.getCurrentPosition());
+            telemetry.addData("Hinge Angle", hingeAngle());
+            telemetry.addData("Joystick x", gamepad2.left_stick_x);
+            telemetry.addData("Joystick y", gamepad2.left_stick_y);
             telemetry.update();
             idle();
 

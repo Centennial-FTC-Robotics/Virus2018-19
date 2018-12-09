@@ -81,8 +81,7 @@ public abstract class VirusHardware extends LinearOpMode {
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        sweeper.setPower(0);
+        sweeper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         initialHeading = orientation.firstAngle;
         initialPitch = orientation.secondAngle;

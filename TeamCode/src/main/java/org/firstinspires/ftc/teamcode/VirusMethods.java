@@ -87,7 +87,7 @@ public class VirusMethods extends VirusHardware {
         initialPitch = orientation.thirdAngle;
         encodersMovedSpeed = 0;
         encodersMovedSpeed = 0;
-        initVision();
+
         //all servo starting positions go here
         marker.setPosition(0);
         intakePivot(false);
@@ -285,9 +285,10 @@ public class VirusMethods extends VirusHardware {
 
     //sets slide to certain position
     public void slides(int position) {
+
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        position = Range.clip(position, -7300, 0);
+        position = Range.clip(position, -3000, 0);
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
         slideLeft.setPower(0.7);
@@ -296,10 +297,11 @@ public class VirusMethods extends VirusHardware {
 
     //set slide power
     public void slidePower(double power){
+
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at max extension, only move if retracting
-        if (slideLeft.getCurrentPosition() <= -7300 || slideRight.getCurrentPosition() <= -7300) {
+        if (slideLeft.getCurrentPosition() <= -3000 || slideRight.getCurrentPosition() <= -3000) {
             if (power > 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
@@ -328,18 +330,22 @@ public class VirusMethods extends VirusHardware {
     }
     //get hinge position
     public int hingeAngle(){
-        return (int) ((hinge.getCurrentPosition()*90)/1200);
+        return (int) ((hinge.getCurrentPosition()*90)/1124);
     }
     //set hinge position
     public void hinge(double angle) {
+        slideLock.setPosition(0);
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
-        int position = (int)(angle * (1200/90));
+        int position = (int)(angle * (1124/90));
         hinge.setTargetPosition(position);
         hinge.setPower(1);
     }
     //set hinge power
     public void hingePower(double power){
+        if (power > 0){
+            slideLock.setPosition(0);
+        }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
         if (hinge.getCurrentPosition() >= 1100) {
@@ -366,28 +372,42 @@ public class VirusMethods extends VirusHardware {
     }
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up){
-        double originalHinge = hingeAngle();
-        if (originalHinge < 10){
-            hinge(10);
-        }
-        int originalSlide = slideLeft.getCurrentPosition();
-        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
-            slides(-50);
-        }
+//        double originalHinge = hingeAngle();
+//        if (originalHinge < 10){
+//            hinge(10);
+//            telemetry.addData("Hinge","Moving Up");
+//        }
+//        int originalSlide = slideLeft.getCurrentPosition();
+//        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
+//            slides(-50);
+//        }
         if (up){
-            pivot1.setPosition(1);
-            pivot2.setPosition(0);
+            pivot1.setPosition(.5);
+            pivot2.setPosition(.5);
         } else {
             pivot1.setPosition(0);
             pivot2.setPosition(1);
         }
-        if (originalHinge < 10){
-            hinge(originalHinge);
-        }
-        if (originalSlide > -50) {
-            slides(originalSlide);
-        }
+//        if (originalHinge < 10){
+//            hinge(originalHinge);
+//        }
+//        if (originalSlide > -50) {
+//            slides(originalSlide);
+//        }
     }
+    //drop marker
+    public void dropMarker(){
+        marker.setPosition(0.65);
+        waitTime(1000);
+        marker.setPosition(.35);
+        marker.setPosition(0.65);
+        waitTime(1000);
+        marker.setPosition(.35);
+        marker.setPosition(0.65);
+        waitTime(1000);
+        marker.setPosition(0);
+    }
+
     //currently in inches
     public void move(float distance) {
         //converting from linear distance -> wheel rotations ->

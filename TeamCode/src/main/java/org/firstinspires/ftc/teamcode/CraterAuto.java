@@ -10,12 +10,13 @@ public class CraterAuto extends VirusMethods {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        initVision();
+        slideLock.setPosition(0.5);
         //hanging:
         // initAutoMotors(); //keep motors running for hang
         //moveHinge(0);
         //add code to drop down
         initializeIMU();
-        initVision();
 
         waitForStart();
         ElapsedTime timer = new ElapsedTime();
@@ -67,9 +68,7 @@ public class CraterAuto extends VirusMethods {
 
         //turn right, drop marker, turn back
         turnRelative(90,turnSpeed);
-        marker.setPosition(1);
-        waitTime(2000);
-        marker.setPosition(0);
+        dropMarker();
         turnAbsolute(-45,turnSpeed);
 
         //go to crater (4.5 ft), extend slides in
