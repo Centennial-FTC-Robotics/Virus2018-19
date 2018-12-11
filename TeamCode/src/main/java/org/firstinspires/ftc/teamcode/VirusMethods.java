@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -229,7 +230,18 @@ public class VirusMethods extends VirusHardware {
 
         return (strInches * slideInchPerStrInch);
     }
+    String formatAngle(AngleUnit angleUnit, double angle)
+    {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
 
+    String formatDegrees(double degrees)
+    {
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+    public double getHeading(){
+        return Double.parseDouble(formatAngle(angles.angleUnit, angles.firstAngle));
+    }
     /* -------------- Processing -------------- */
 
     public double getAngleDist(double targetAngle, double currentAngle) {
@@ -372,15 +384,15 @@ public class VirusMethods extends VirusHardware {
     }
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up){
-//        double originalHinge = hingeAngle();
-//        if (originalHinge < 10){
-//            hinge(10);
-//            telemetry.addData("Hinge","Moving Up");
-//        }
-//        int originalSlide = slideLeft.getCurrentPosition();
-//        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
-//            slides(-50);
-//        }
+        double originalHinge = hingeAngle();
+        if (originalHinge < 10){
+            hinge(10);
+            telemetry.addData("Hinge","Moving Up");
+        }
+        int originalSlide = slideLeft.getCurrentPosition();
+        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
+            slides(-50);
+        }
         if (up){
             pivot1.setPosition(.5);
             pivot2.setPosition(.5);
@@ -388,12 +400,12 @@ public class VirusMethods extends VirusHardware {
             pivot1.setPosition(0);
             pivot2.setPosition(1);
         }
-//        if (originalHinge < 10){
-//            hinge(originalHinge);
-//        }
-//        if (originalSlide > -50) {
-//            slides(originalSlide);
-//        }
+        if (originalHinge < 10){
+            hinge(originalHinge);
+        }
+        if (originalSlide > -50) {
+            slides(originalSlide);
+        }
     }
     //drop marker
     public void dropMarker(){
@@ -407,7 +419,9 @@ public class VirusMethods extends VirusHardware {
         waitTime(1000);
         marker.setPosition(0);
     }
+    public void autoSweep(){
 
+    }
     //currently in inches
     public void move(float distance) {
         //converting from linear distance -> wheel rotations ->
@@ -454,7 +468,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void turnAbsolute(double targetAngle, double speed) {
-        double currentAngle = getRotationinDimension('Z');
+        double currentAngle = getHeading();
         int direction;
         if (targetAngle != currentAngle) {
 

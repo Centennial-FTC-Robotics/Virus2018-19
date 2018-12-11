@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -35,6 +36,8 @@ public abstract class VirusHardware extends LinearOpMode {
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
     BNO055IMU imu;
+    Orientation angles;
+    Acceleration gravity;
     double initialHeading;
     double initialPitch;
     double initialRoll;
@@ -54,9 +57,16 @@ public abstract class VirusHardware extends LinearOpMode {
         sifter = hardwareMap.servo.get("sifter");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
-
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled       = true;
+        parameters.useExternalCrystal   = true;
+        parameters.mode                 = BNO055IMU.SensorMode.IMU;
+        parameters.loggingTag           = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-
+        imu.initialize(parameters);
+        telemetry.setMsTransmissionInterval(100);
 
 
         rmotor0.setDirection(DcMotor.Direction.REVERSE);
