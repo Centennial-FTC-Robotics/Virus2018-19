@@ -34,7 +34,7 @@ public class Drive extends VirusMethods {
             hingePower(-0.75* gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
             if(gamepad2.b && !gamepad2.start){
-                slides(-3500);
+                slides(3500);
             }
             //retract slides
             if(gamepad2.a){
@@ -79,13 +79,10 @@ public class Drive extends VirusMethods {
             if (gamepad2.x){
                 hinge(45);
                 intakePivot(true);
-                slides(-3000);
+                slides(3000);
                 intakePivot(false);
                 hinge(0);
             }
-//            telemetry.addData("Rotation X", getRotationinDimension('X'));
-//            telemetry.addData("Rotation Y", getRotationinDimension('Y'));
-//            telemetry.addData("Rotation Z", getRotationinDimension('Z'));
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());

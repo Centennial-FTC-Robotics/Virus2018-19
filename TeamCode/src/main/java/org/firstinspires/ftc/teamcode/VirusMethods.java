@@ -140,11 +140,14 @@ public class VirusMethods extends VirusHardware {
 
     public void initializeIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled       = true;
+        parameters.useExternalCrystal   = true;
+        parameters.mode                 = BNO055IMU.SensorMode.IMU;
+        parameters.loggingTag           = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
         while (opModeIsActive()&&!imu.isGyroCalibrated());
@@ -270,7 +273,7 @@ public class VirusMethods extends VirusHardware {
 
         float wheelRotations = (float)(dist / (wheelDiameterIn * Math.PI));
         float motorRotations = (22/24) * (wheelRotations);
-        float encoderCounts = 560 * motorRotations;
+        float encoderCounts = (float) (537.6 * motorRotations);
         int position = Math.round(encoderCounts);
 
         return position;
@@ -278,7 +281,7 @@ public class VirusMethods extends VirusHardware {
 
     private double convertEncoderToInch(int encoders) {
 
-        float motorRotations = encoders / 560;
+        float motorRotations = (float) (encoders / 537.6);
         float wheelRotations = motorRotations * (24/22);
         double distance = wheelRotations * (wheelDiameterIn * Math.PI);
 
@@ -300,7 +303,7 @@ public class VirusMethods extends VirusHardware {
 
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        position = Range.clip(position, -3000, 0);
+        position = Range.clip(position, 0, 7300);
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
         slideLeft.setPower(0.7);
@@ -313,7 +316,7 @@ public class VirusMethods extends VirusHardware {
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at max extension, only move if retracting
-        if (slideLeft.getCurrentPosition() <= -3000 || slideRight.getCurrentPosition() <= -3000) {
+        if (slideLeft.getCurrentPosition() <= 0 || slideRight.getCurrentPosition() <= 0) {
             if (power > 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
@@ -324,7 +327,7 @@ public class VirusMethods extends VirusHardware {
             }
         }
         //if completely retracted, only move if extending
-        else if (slideLeft.getCurrentPosition() >= 0 || slideRight.getCurrentPosition() >= 0){
+        else if (slideLeft.getCurrentPosition() >= 7300 || slideRight.getCurrentPosition() >= 7300){
             if (power < 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
@@ -418,6 +421,21 @@ public class VirusMethods extends VirusHardware {
         marker.setPosition(0.65);
         waitTime(1000);
         marker.setPosition(0);
+    }
+    public void dehang(){
+        //get on ground
+        slides(3500);
+        hinge(90);
+        //move forward and retract slides
+        move(3,0.3f);
+        slides(0);
+    }
+    public void intoCrater(){
+        hinge(45);
+        intakePivot(true);
+        slides(3000);
+        intakePivot(false);
+        hinge(0);
     }
     public void autoSweep(){
 

@@ -57,22 +57,13 @@ public abstract class VirusHardware extends LinearOpMode {
         sifter = hardwareMap.servo.get("sifter");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled       = true;
-        parameters.useExternalCrystal   = true;
-        parameters.mode                 = BNO055IMU.SensorMode.IMU;
-        parameters.loggingTag           = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.setMsTransmissionInterval(100);
 
 
         rmotor0.setDirection(DcMotor.Direction.REVERSE);
         rmotor1.setDirection(DcMotor.Direction.REVERSE);
 
-        slideLeft.setDirection(DcMotor.Direction.REVERSE);
+        slideRight.setDirection(DcMotor.Direction.REVERSE);
 
         lmotor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lmotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
