@@ -15,6 +15,7 @@ public class Drive extends VirusMethods {
     float leftSpeed;
     float rightSpeed;
     float factor;
+
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         waitForStart();
@@ -36,9 +37,15 @@ public class Drive extends VirusMethods {
             if(gamepad2.b && !gamepad2.start){
                 slides(3500);
             }
-            //retract slides
+
             if(gamepad2.a){
-                slides(0);
+                retract();
+            }
+            if(gamepad2.b && !gamepad2.start){
+                intoCrater();
+            }
+            if(gamepad2.y){
+                score();
             }
             //claw down
             if(gamepad2.dpad_down){
@@ -62,7 +69,7 @@ public class Drive extends VirusMethods {
                 sweeper.setPower(-1);
             }else if(gamepad2.left_bumper){
                 //sweep out
-                sweeper.setPower(0.7);
+                sweeper.setPower(0.4);
             } else{
                 //idle, sweep in slowly
                 sweeper.setPower(-0.3);

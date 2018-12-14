@@ -33,6 +33,7 @@ public abstract class VirusHardware extends LinearOpMode {
     Servo pivot1, pivot2;
     Servo marker;
     Servo sifter;
+    Servo outrigger;
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
     BNO055IMU imu;
@@ -57,6 +58,7 @@ public abstract class VirusHardware extends LinearOpMode {
         sifter = hardwareMap.servo.get("sifter");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
+        outrigger = hardwareMap.servo.get("outrigger");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
 

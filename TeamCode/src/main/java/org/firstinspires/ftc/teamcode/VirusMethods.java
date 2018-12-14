@@ -51,6 +51,8 @@ public class VirusMethods extends VirusHardware {
     private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
     private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
     private double slideInchPerStrInch = 1.0; // replace w/ actual value
+    enum intakeState {retracted, crater, lander}
+    intakeState intakeState;
 
     // simple conversion
     private static final float mmPerInch        = 25.4f;
@@ -88,11 +90,12 @@ public class VirusMethods extends VirusHardware {
         initialPitch = orientation.thirdAngle;
         encodersMovedSpeed = 0;
         encodersMovedSpeed = 0;
-
+        intakeState = intakeState.retracted;
         //all servo starting positions go here
         marker.setPosition(0);
         intakePivot(false);
         sifter.setPosition(0); //ball mode
+        outrigger.setPosition(0);
         //need to run initVuforia and initTfod
     }
 
@@ -431,14 +434,44 @@ public class VirusMethods extends VirusHardware {
         slides(0);
     }
     public void intoCrater(){
-        hinge(45);
-        intakePivot(true);
+        sweeper.setPower(-1);
+        outrigger.setPosition(0);
+        if (intakeState == intakeState.retracted){
+            hinge(45);
+            intakePivot(true);
+        }
+        if (intakeState == intakeState.lander){
+            slides(0);
+            hinge(45);
+        }
         slides(3000);
         intakePivot(false);
         hinge(0);
+        intakeState = intakeState.crater;
     }
-    public void autoSweep(){
-
+    public void retract(){
+        outrigger.setPosition(0);
+        sweeper.setPower(0);
+        if (intakeState == intakeState.crater){
+            hinge(45);
+            intakePivot(true);
+        }
+        slides(0);
+        intakePivot(false);
+        hinge(0);
+        intakeState = intakeState.retracted;
+    }
+    public void score(){
+        if (intakeState == intakeState.crater){
+            hinge(45);
+            slides(0);
+        }
+        outrigger.setPosition(1);
+        hinge(90);
+        intakePivot(true);
+        slides(3500);
+        sweeper.setPower(0.4);
+        intakeState = intakeState.lander;
     }
     //currently in inches
     public void move(float distance) {
