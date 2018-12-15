@@ -54,6 +54,7 @@ public class VirusMethods extends VirusHardware {
     enum intakeState {retracted, crater, lander}
     intakeState intakeState;
 
+
     // simple conversion
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)

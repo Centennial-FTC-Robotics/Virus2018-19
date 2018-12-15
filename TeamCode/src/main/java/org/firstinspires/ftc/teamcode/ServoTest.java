@@ -12,18 +12,10 @@ public class ServoTest extends VirusMethods {
         super.runOpMode();
         waitForStart();
         while(opModeIsActive()){
-            if (gamepad2.right_bumper){
-                marker.setPosition(marker.getPosition()+0.05);
-                while (gamepad2.right_bumper);
-            }
-            if (gamepad2.left_bumper){
-                marker.setPosition(marker.getPosition()-0.05);
-                while (gamepad2.left_bumper);
-            }
-            if (gamepad2.a){
-                dropMarker();
-            }
-            telemetry.addData("marker",marker.getPosition());
+
+            telemetry.addData("Red",colorSensor.red());
+            telemetry.addData("Green",colorSensor.green());
+            telemetry.addData("Blue",colorSensor.blue());
             telemetry.update();
         }
     }

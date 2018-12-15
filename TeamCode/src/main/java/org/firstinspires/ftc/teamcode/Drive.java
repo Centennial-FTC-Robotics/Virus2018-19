@@ -15,11 +15,22 @@ public class Drive extends VirusMethods {
     float leftSpeed;
     float rightSpeed;
     float factor;
-
-    public void runOpMode() throws InterruptedException {
+    String intake;
+    int red;
+    int green;
+    int blue;
+        public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        if (slideLeft.getCurrentPosition()>2500){
+            intakeState = intakeState.crater;
+        }else{
+            intakeState = intakeState.retracted;
+        }
         waitForStart();
         while(opModeIsActive()){
+            red = colorSensor.red();
+            green = colorSensor.green();
+            blue = colorSensor.blue();
             angles  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             gravity = imu.getGravity();
             //drive system
@@ -66,13 +77,13 @@ public class Drive extends VirusMethods {
             //sweepers
             if(gamepad2.right_bumper){
                 //sweep in
-                sweeper.setPower(-1);
+                sweeperVex.setPower(-0.5);
             }else if(gamepad2.left_bumper){
                 //sweep out
-                sweeper.setPower(0.4);
+                sweeperVex.setPower(0.3);
             } else{
                 //idle, sweep in slowly
-                sweeper.setPower(-0.3);
+                sweeperVex.setPower(0);
             }
             //ball mode
             if(gamepad2.dpad_right){
@@ -90,11 +101,20 @@ public class Drive extends VirusMethods {
                 intakePivot(false);
                 hinge(0);
             }
+            if (colorSensor.red()<30 && colorSensor.green()<30 && colorSensor.blue()<30){
+                intake = "Nothing";
+            }
+            if (Math.abs((red - blue)/((red+blue)/2)) < .2){
+                intake = "Ball";
+            }
+            if ((Math.abs((red - blue)/((red+blue)/2)) > .2) && (Math.abs((red - green)/((red+green)/2)) > .2)){
+                intake = "Cube";
+            }
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());
 //            telemetry.addData("Joystick x", gamepad2.left_stick_x);
-            telemetry.addData("Heading", getHeading());
+            telemetry.addData("Intake", intake);
             telemetry.update();
             idle();
 
