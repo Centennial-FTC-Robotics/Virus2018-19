@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
@@ -53,9 +54,13 @@ public class VirusMethods extends VirusHardware {
     private double slideInchPerStrInch = 1.0; // replace w/ actual value
     enum intakeState {retracted, crater, lander}
     intakeState intakeState;
+
+    //intake
     enum intake {Ball, Cube, None}
     intake slot1;
     intake slot2;
+    intake[] intakeSlots = {slot1, slot2};
+    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
 
     // simple conversion
     private static final float mmPerInch        = 25.4f;
@@ -296,6 +301,17 @@ public class VirusMethods extends VirusHardware {
     public double percentDiff(int num1, int num2) {
         double diff = ((num1-num2)/((num1+num2)/2))*100;
         return diff;
+    }
+    public void updateIntakes(){
+        for (int i=0; i<intakeSlots.length; i++){
+            if (percentDiff(colorSensors[i].red(),colorSensors[i].blue()) > 70){
+                intakeSlots[i] = intake.Cube;
+            }else if ((colorSensors[i].red()+colorSensors[i].green()+colorSensors[i].blue())/3 < 30){
+                intakeSlots[i] = intake.None;
+            }else{
+                intakeSlots[i] = intake.Ball;
+            }
+        }
     }
     /* -------------- Movement -------------- */
 

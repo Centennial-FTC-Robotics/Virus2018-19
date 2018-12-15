@@ -37,7 +37,7 @@ public abstract class VirusHardware extends LinearOpMode {
     Servo marker;
     Servo sifter;
     Servo outrigger;
-    ColorSensor colorSensor;
+    ColorSensor colorSensor1, colorSensor2;
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
     BNO055IMU imu;
@@ -65,8 +65,8 @@ public abstract class VirusHardware extends LinearOpMode {
         slideRight = hardwareMap.dcMotor.get("slideRight");
         outrigger = hardwareMap.servo.get("outrigger");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
-
+        colorSensor1 = hardwareMap.colorSensor.get("colorSensor1");
+        colorSensor2 = hardwareMap.colorSensor.get("colorSensor2");
 
         rmotor0.setDirection(DcMotor.Direction.REVERSE);
         rmotor1.setDirection(DcMotor.Direction.REVERSE);

@@ -16,9 +16,9 @@ public class Drive extends VirusMethods {
     float rightSpeed;
     float factor;
     String intake;
-    int red;
-    int green;
-    int blue;
+    int red1;
+    int green1;
+    int blue1;
         public void runOpMode() throws InterruptedException {
         super.runOpMode();
         if (slideLeft.getCurrentPosition()>2500){
@@ -28,9 +28,9 @@ public class Drive extends VirusMethods {
         }
         waitForStart();
         while(opModeIsActive()){
-            red = colorSensor.red();
-            green = colorSensor.green();
-            blue = colorSensor.blue();
+            red1 = colorSensor1.red();
+            green1 = colorSensor1.green();
+            blue1 = colorSensor1.blue();
             angles  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             gravity = imu.getGravity();
             //drive system
@@ -101,18 +101,12 @@ public class Drive extends VirusMethods {
                 intakePivot(false);
                 hinge(0);
             }
-            if (percentDiff(red,blue) > 70){
-                intake = "Cube";
-            }else if ((red+green+blue)/3 < 30){
-                intake = "None";
-            }else{
-                intake = "Sphere";
-            }
+            updateIntakes();
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());
 //            telemetry.addData("Joystick x", gamepad2.left_stick_x);
-            telemetry.addData("Intake", intake);
+            telemetry.addData("Intakes", slot1);
             telemetry.update();
             idle();
 

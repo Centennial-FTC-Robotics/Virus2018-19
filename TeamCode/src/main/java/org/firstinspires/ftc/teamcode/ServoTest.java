@@ -13,9 +13,9 @@ public class ServoTest extends VirusMethods {
         waitForStart();
         while(opModeIsActive()){
 
-            telemetry.addData("Red",colorSensor.red());
-            telemetry.addData("Green",colorSensor.green());
-            telemetry.addData("Blue",colorSensor.blue());
+            telemetry.addData("Red",colorSensor1.red());
+            telemetry.addData("Green",colorSensor1.green());
+            telemetry.addData("Blue",colorSensor1.blue());
             telemetry.update();
         }
     }
