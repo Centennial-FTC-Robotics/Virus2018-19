@@ -53,7 +53,9 @@ public class VirusMethods extends VirusHardware {
     private double slideInchPerStrInch = 1.0; // replace w/ actual value
     enum intakeState {retracted, crater, lander}
     intakeState intakeState;
-
+    enum intake {Ball, Cube, None}
+    intake slot1;
+    intake slot2;
 
     // simple conversion
     private static final float mmPerInch        = 25.4f;
@@ -291,7 +293,10 @@ public class VirusMethods extends VirusHardware {
 
         return distance;
     }
-
+    public double percentDiff(int num1, int num2) {
+        double diff = ((num1-num2)/((num1+num2)/2))*100;
+        return diff;
+    }
     /* -------------- Movement -------------- */
 
     //movement based on speeds

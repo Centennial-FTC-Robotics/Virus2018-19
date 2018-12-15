@@ -101,14 +101,12 @@ public class Drive extends VirusMethods {
                 intakePivot(false);
                 hinge(0);
             }
-            if (colorSensor.red()<30 && colorSensor.green()<30 && colorSensor.blue()<30){
-                intake = "Nothing";
-            }
-            if (Math.abs((red - blue)/((red+blue)/2)) < .2){
-                intake = "Ball";
-            }
-            if ((Math.abs((red - blue)/((red+blue)/2)) > .2) && (Math.abs((red - green)/((red+green)/2)) > .2)){
+            if (percentDiff(red,blue) > 70){
                 intake = "Cube";
+            }else if ((red+green+blue)/3 < 30){
+                intake = "None";
+            }else{
+                intake = "Sphere";
             }
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
