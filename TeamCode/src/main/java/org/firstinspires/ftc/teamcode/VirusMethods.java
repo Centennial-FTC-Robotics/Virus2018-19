@@ -299,19 +299,30 @@ public class VirusMethods extends VirusHardware {
         return distance;
     }
     public double percentDiff(int num1, int num2) {
-        double diff = ((num1-num2)/((num1+num2)/2))*100;
+        double diff = (((double)num1-(double)num2)/(((double)num1+(double)num2)/2))*100;
         return diff;
     }
     public void updateIntakes(){
-        for (int i=0; i<intakeSlots.length; i++){
-            if (percentDiff(colorSensors[i].red(),colorSensors[i].blue()) > 70){
-                intakeSlots[i] = intake.Cube;
-            }else if ((colorSensors[i].red()+colorSensors[i].green()+colorSensors[i].blue())/3 < 30){
-                intakeSlots[i] = intake.None;
-            }else{
-                intakeSlots[i] = intake.Ball;
-            }
+//        for (int i=0; i<intakeSlots.length; i++){
+//            if (percentDiff(colorSensors[i].red(),colorSensors[i].blue()) > 70){
+//                intakeSlots[i] = intake.Cube;
+//            }else if ((colorSensors[i].red()+colorSensors[i].green()+colorSensors[i].blue())/3 < 30){
+//                intakeSlots[i] = intake.None;
+//            }else{
+//                intakeSlots[i] = intake.Ball;
+//            }
+//        }
+        if (percentDiff(colorSensor1.red(),colorSensor1.blue()) > 70){
+            slot1 = intake.Cube;
+        }else if ((colorSensor1.red()+colorSensor1.green()+colorSensor1.blue())/3 < 30){
+            slot1 = intake.None;
+        }else{
+            slot1 = intake.Ball;
         }
+        telemetry.addData("Red",colorSensor1.red());
+        telemetry.addData("Green",colorSensor1.green());
+        telemetry.addData("Blue",colorSensor1.blue());
+        telemetry.addData("Percent diff", percentDiff(colorSensor1.red(),colorSensor1.blue()));
     }
     /* -------------- Movement -------------- */
 
