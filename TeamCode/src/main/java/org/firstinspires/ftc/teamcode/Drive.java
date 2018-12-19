@@ -101,11 +101,17 @@ public class Drive extends VirusMethods {
                 intakePivot(false);
                 hinge(0);
             }
+            if(intakeState == intakeState.crater){
+                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
+                    double turnFactor = 0.3 + 0.093*(slideLeft.getCurrentPosition()/7300);
+                    runDriveMotors((float) (turnFactor*gamepad2.left_stick_x), (float) (-turnFactor*gamepad2.left_stick_x));
+                }
+            }
             updateIntakes();
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());
-//            telemetry.addData("Joystick x", gamepad2.left_stick_x);
+            telemetry.addData("Joystick x", gamepad2.left_stick_x);
             telemetry.addData("Intakes", slot1);
             telemetry.update();
             idle();

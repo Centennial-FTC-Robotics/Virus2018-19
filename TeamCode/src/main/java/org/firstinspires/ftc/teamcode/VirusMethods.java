@@ -303,15 +303,6 @@ public class VirusMethods extends VirusHardware {
         return diff;
     }
     public void updateIntakes(){
-//        for (int i=0; i<intakeSlots.length; i++){
-//            if (percentDiff(colorSensors[i].red(),colorSensors[i].blue()) > 70){
-//                intakeSlots[i] = intake.Cube;
-//            }else if ((colorSensors[i].red()+colorSensors[i].green()+colorSensors[i].blue())/3 < 30){
-//                intakeSlots[i] = intake.None;
-//            }else{
-//                intakeSlots[i] = intake.Ball;
-//            }
-//        }
         if (percentDiff(colorSensor1.red(),colorSensor1.blue()) > 70){
             slot1 = intake.Cube;
         }else if ((colorSensor1.red()+colorSensor1.green()+colorSensor1.blue())/3 < 30){
@@ -319,10 +310,13 @@ public class VirusMethods extends VirusHardware {
         }else{
             slot1 = intake.Ball;
         }
-        telemetry.addData("Red",colorSensor1.red());
-        telemetry.addData("Green",colorSensor1.green());
-        telemetry.addData("Blue",colorSensor1.blue());
-        telemetry.addData("Percent diff", percentDiff(colorSensor1.red(),colorSensor1.blue()));
+        if (percentDiff(colorSensor2.red(),colorSensor2.blue()) > 70){
+            slot2 = intake.Cube;
+        }else if ((colorSensor2.red()+colorSensor2.green()+colorSensor2.blue())/3 < 30){
+            slot2 = intake.None;
+        }else{
+            slot2 = intake.Ball;
+        }
     }
     /* -------------- Movement -------------- */
 
