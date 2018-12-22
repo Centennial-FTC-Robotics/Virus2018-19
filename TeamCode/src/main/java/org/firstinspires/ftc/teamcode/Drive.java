@@ -53,9 +53,12 @@ public class Drive extends VirusMethods {
                 retract();
             }
             if(gamepad2.b && !gamepad2.start){
-                intoCrater();
+                standby();
             }
             if(gamepad2.y){
+                intoCrater();
+            }
+            if(gamepad2.x){
                 score();
             }
             //claw down
@@ -103,7 +106,7 @@ public class Drive extends VirusMethods {
             }
             if(intakeState == intakeState.crater){
                 if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
-                    double turnFactor = 0.3 + 0.093*(slideLeft.getCurrentPosition()/7300);
+                    double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
                     runDriveMotors((float) (turnFactor*gamepad2.left_stick_x), (float) (-turnFactor*gamepad2.left_stick_x));
                 }
             }
@@ -112,7 +115,8 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());
             telemetry.addData("Joystick x", gamepad2.left_stick_x);
-            telemetry.addData("Intakes", slot1);
+            telemetry.addData("Intake 1", slot1);
+            telemetry.addData("Intake 2", slot2);
             telemetry.update();
             idle();
 

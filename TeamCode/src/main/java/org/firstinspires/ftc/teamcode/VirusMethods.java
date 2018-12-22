@@ -52,7 +52,7 @@ public class VirusMethods extends VirusHardware {
     private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
     private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
     private double slideInchPerStrInch = 1.0; // replace w/ actual value
-    enum intakeState {retracted, crater, lander}
+    enum intakeState {retracted, standby, crater, lander}
     intakeState intakeState;
 
     //intake
@@ -305,17 +305,17 @@ public class VirusMethods extends VirusHardware {
     public void updateIntakes(){
         if (percentDiff(colorSensor1.red(),colorSensor1.blue()) > 70){
             slot1 = intake.Cube;
-        }else if ((colorSensor1.red()+colorSensor1.green()+colorSensor1.blue())/3 < 30){
-            slot1 = intake.None;
-        }else{
+        }else if ((colorSensor1.red()+colorSensor1.green()+colorSensor1.blue())/3 > 30){
             slot1 = intake.Ball;
+        }else{
+            slot1 = intake.None;
         }
         if (percentDiff(colorSensor2.red(),colorSensor2.blue()) > 70){
             slot2 = intake.Cube;
-        }else if ((colorSensor2.red()+colorSensor2.green()+colorSensor2.blue())/3 < 30){
-            slot2 = intake.None;
-        }else{
+        }else if ((colorSensor2.red()+colorSensor2.green()+colorSensor2.blue())/3 > 30){
             slot2 = intake.Ball;
+        }else{
+            slot2 = intake.None;
         }
     }
     /* -------------- Movement -------------- */
@@ -338,6 +338,12 @@ public class VirusMethods extends VirusHardware {
         slideRight.setTargetPosition(position);
         slideLeft.setPower(0.7);
         slideRight.setPower(0.7);
+    }
+
+    //sets slide to specified INCH position
+    public void slidesINCH(double inch){
+        int position = (int)(inch * 7300/36);
+        slides(position);
     }
 
     //set slide power
@@ -383,13 +389,21 @@ public class VirusMethods extends VirusHardware {
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int)(angle * (1124/90));
+        if (hinge.getCurrentPosition() < position){
+            outrigger.setPosition(1);
+        }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
+        while (hinge.isBusy());
+        outrigger.setPosition(0);
     }
     //set hinge power
     public void hingePower(double power){
         if (power > 0){
             slideLock.setPosition(0);
+            outrigger.setPosition(1);
+        }else{
+            outrigger.setPosition(0);
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
@@ -443,13 +457,13 @@ public class VirusMethods extends VirusHardware {
     //drop marker
     public void dropMarker(){
         marker.setPosition(0.65);
-        waitTime(1000);
+        waitTime(500);
         marker.setPosition(.35);
         marker.setPosition(0.65);
-        waitTime(1000);
+        waitTime(500);
         marker.setPosition(.35);
         marker.setPosition(0.65);
-        waitTime(1000);
+        waitTime(500);
         marker.setPosition(0);
     }
     public void dehang(){
@@ -499,6 +513,11 @@ public class VirusMethods extends VirusHardware {
         slides(3500);
         sweeper.setPower(0.4);
         intakeState = intakeState.lander;
+    }
+    public void standby(){
+        hinge(45);
+        slides(0);
+        intakeState = intakeState.standby;
     }
     //currently in inches
     public void move(float distance) {
