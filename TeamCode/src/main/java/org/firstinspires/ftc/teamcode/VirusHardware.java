@@ -30,12 +30,12 @@ public abstract class VirusHardware extends LinearOpMode {
     DcMotor slideLeft;
     DcMotor slideRight;
     DcMotor hinge;
-    DcMotor sweeper;
-    CRServo sweeperVex;
-    Servo slideLock;
-    Servo pivot1, pivot2;
-    Servo marker;
-    Servo sifter;
+    //DcMotor sweeper; //
+    CRServo sweeperVex; //
+    Servo  slideLock; //
+    Servo pivot1, pivot2; //
+    Servo marker; //
+    Servo sifter; //
     Servo outrigger;
     ColorSensor colorSensor1, colorSensor2;
 
@@ -57,8 +57,8 @@ public abstract class VirusHardware extends LinearOpMode {
         slideLock = hardwareMap.servo.get("slideLock");
         pivot1 = hardwareMap.servo.get("pivot1");
         pivot2 = hardwareMap.servo.get("pivot2");
-        sweeper = hardwareMap.dcMotor.get("sweeper");
-        sweeperVex = hardwareMap.crservo.get("sweeperRev");
+        //sweeper = hardwareMap.dcMotor.get("sweeper");
+        sweeperVex = hardwareMap.crservo.get("sweeperVex");
         marker = hardwareMap.servo.get("marker");
         sifter = hardwareMap.servo.get("sifter");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
@@ -90,7 +90,7 @@ public abstract class VirusHardware extends LinearOpMode {
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        sweeper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //sweeper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         initialHeading = orientation.firstAngle;
         initialPitch = orientation.secondAngle;

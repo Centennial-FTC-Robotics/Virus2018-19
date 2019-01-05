@@ -475,7 +475,7 @@ public class VirusMethods extends VirusHardware {
         slides(0);
     }
     public void intoCrater(){
-        sweeper.setPower(-1);
+        //sweeperVex.setPower(-1);
         outrigger.setPosition(0);
         if (intakeState == intakeState.retracted){
             hinge(45);
@@ -492,7 +492,7 @@ public class VirusMethods extends VirusHardware {
     }
     public void retract(){
         outrigger.setPosition(0);
-        sweeper.setPower(0);
+        //sweeper.setPower(0);
         if (intakeState == intakeState.crater){
             hinge(45);
             intakePivot(true);
@@ -511,7 +511,7 @@ public class VirusMethods extends VirusHardware {
         hinge(90);
         intakePivot(true);
         slides(3500);
-        sweeper.setPower(0.4);
+        //sweeper.setPower(0.4);
         intakeState = intakeState.lander;
     }
     public void standby(){

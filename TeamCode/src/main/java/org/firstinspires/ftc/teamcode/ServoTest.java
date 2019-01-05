@@ -12,10 +12,8 @@ public class ServoTest extends VirusMethods {
         super.runOpMode();
         waitForStart();
         while(opModeIsActive()){
-
-            telemetry.addData("Red",colorSensor1.red());
-            telemetry.addData("Green",colorSensor1.green());
-            telemetry.addData("Blue",colorSensor1.blue());
+            hinge.setPower(-0.75* gamepad2.right_stick_y);
+            telemetry.addData("Hinge",hinge.getCurrentPosition());
             telemetry.update();
         }
     }
