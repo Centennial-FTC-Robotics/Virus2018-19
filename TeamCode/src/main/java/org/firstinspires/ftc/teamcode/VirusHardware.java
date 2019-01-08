@@ -70,6 +70,7 @@ public abstract class VirusHardware extends LinearOpMode {
 
         rmotor0.setDirection(DcMotor.Direction.REVERSE);
         rmotor1.setDirection(DcMotor.Direction.REVERSE);
+        hinge.setDirection(DcMotor.Direction.REVERSE);
 
         slideRight.setDirection(DcMotor.Direction.REVERSE);
 

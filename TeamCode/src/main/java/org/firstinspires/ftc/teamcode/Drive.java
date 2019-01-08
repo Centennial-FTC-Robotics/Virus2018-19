@@ -15,7 +15,6 @@ public class Drive extends VirusMethods {
     float leftSpeed;
     float rightSpeed;
     float factor;
-    String intake;
     int red1;
     int green1;
     int blue1;
@@ -43,8 +42,8 @@ public class Drive extends VirusMethods {
                 slidePower(gamepad2.left_stick_y);
             }
             //hinge follows joystick
-            //hingePower(-0.75* gamepad2.right_stick_y);
-            hinge.setPower(gamepad2.right_stick_y);
+            hingePower(-1.0* gamepad2.right_stick_y);
+            //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
 //            if(gamepad2.a){
@@ -104,6 +103,7 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
             telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
+            telemetry.addData("Hinge Angle", hingeAngle());
 //            telemetry.addData("Slide Left", slideLeft.getCurrentPosition());
 //            telemetry.addData("Slide Right", slideRight.getCurrentPosition());
 //            telemetry.addData("Gamepad 2 Right Joystick y", gamepad2.right_stick_y);

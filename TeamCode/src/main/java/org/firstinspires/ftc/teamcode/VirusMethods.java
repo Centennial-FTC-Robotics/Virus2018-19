@@ -47,11 +47,11 @@ public class VirusMethods extends VirusHardware {
     private final int wheelDiameterIn = 4;
 
     // slides
-    private int encodersMovedStronk;
+    //private int encodersMovedStronk;
     private int encodersMovedSpeed;
-    private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
-    private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
-    private double slideInchPerStrInch = 1.0; // replace w/ actual value
+    //private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
+    //private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
+    //private double slideInchPerStrInch = 1.0; // replace w/ actual value
     enum intakeState {retracted, standby, crater, lander}
     intakeState intakeState;
 
@@ -64,8 +64,6 @@ public class VirusMethods extends VirusHardware {
 
     // simple conversion
     private static final float mmPerInch        = 25.4f;
-    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight   = (6) * mmPerInch;
 
     // turn
     public static final int RIGHT = 1;
@@ -82,8 +80,6 @@ public class VirusMethods extends VirusHardware {
 
     private VuforiaTrackables targetsRoverRuckus;
     private VuforiaLocalizer.Parameters parameters;
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
     private List<VuforiaTrackable> allTrackables;
 
     //distance calculation
@@ -117,37 +113,13 @@ public class VirusMethods extends VirusHardware {
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
-    private void initTfod() {
-        //create parameter object and pass it to create Tensor Flow object detector
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-    }
-
-    private void navTargetInit() {
-
-        cameraMonitorViewId =  hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.useExtendedTracking = true;
-        allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targetsRoverRuckus);
-        targetsRoverRuckus.activate();
-    }
-
-    public void autoInit() {
-        initVuforia();
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-        //wait for game to start
-        telemetry.addData(">", "Press Play to start tracking");
-        telemetry.update();
-        waitForStart();
-    }
+//    private void initTfod() {
+//        //create parameter object and pass it to create Tensor Flow object detector
+//        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+//        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+//        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+//    }
 
     public void initializeIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -166,22 +138,6 @@ public class VirusMethods extends VirusHardware {
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
-    }
-
-    public void initVision() {
-        initVuforia();
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-        //wait for game to start
-        telemetry.addData(">", "Press Play to start tracking");
-        telemetry.update();
-    }
-
-    public void initAutoMotors() {
-        slidePower(1);
     }
 
     /* -------------- Status Methods -------------- */
@@ -211,11 +167,6 @@ public class VirusMethods extends VirusHardware {
         return orientation.secondAngle;
     }
 
-    public OpenGLMatrix getRotation() {
-        updateOrientation();
-        return orientation.getRotationMatrix();
-    }
-
     public double getRotationinDimension(char dimension) {
 
         switch (Character.toUpperCase(dimension)) {
@@ -233,17 +184,6 @@ public class VirusMethods extends VirusHardware {
         return 0;
     }
 
-    public int getHingeAngle() {
-
-        return hinge.getCurrentPosition() * (2240 / 90);
-    }
-
-    public double getSlideExtendInch() {
-
-        double strInches = (encodersMovedSpeed * inchesPerEncoderSpeed) + (encodersMovedStronk * inchesPerEncoderStronk);
-
-        return (strInches * slideInchPerStrInch);
-    }
     String formatAngle(AngleUnit angleUnit, double angle)
     {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
@@ -290,14 +230,6 @@ public class VirusMethods extends VirusHardware {
         return position;
     }
 
-    private double convertEncoderToInch(int encoders) {
-
-        float motorRotations = (float) (encoders / 537.6);
-        float wheelRotations = motorRotations * (24/22);
-        double distance = wheelRotations * (wheelDiameterIn * Math.PI);
-
-        return distance;
-    }
     public double percentDiff(int num1, int num2) {
         double diff = (((double)num1-(double)num2)/(((double)num1+(double)num2)/2))*100;
         return diff;
@@ -381,14 +313,14 @@ public class VirusMethods extends VirusHardware {
     }
     //get hinge position
     public int hingeAngle(){
-        return (int) ((hinge.getCurrentPosition()*90)/1124);
+        return (int) ((hinge.getCurrentPosition()*90)/3700);
     }
     //set hinge position
     public void hinge(double angle) {
         slideLock.setPosition(0);
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
-        int position = (int)(angle * (1124/90));
+        int position = (int)(angle * (3700/90));
         if (hinge.getCurrentPosition() < position){
             outrigger.setPosition(1);
         }
@@ -407,7 +339,7 @@ public class VirusMethods extends VirusHardware {
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
-        if (hinge.getCurrentPosition() >= 1100) {
+        if (hinge.getCurrentPosition() >= 3700) {
             if (power < 0) {
                 hinge.setPower(power);
             }
@@ -588,13 +520,6 @@ public class VirusMethods extends VirusHardware {
         }
     }
 
-
-//    public void turn2(vdouble targetAngle, double speed) {
-//        double currentAngle = getRotationinDimension('Z');
-//        double angleDifference = currentAngle - targetAngle;
-//
-//    }
-
     /* -------------- Procedure -------------- */
 
     public void waitForMotors() {
@@ -612,17 +537,6 @@ public class VirusMethods extends VirusHardware {
 
     public void updateOrientation (){
         orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
-    }
-
-    public void ejectTeamMarker() {
-
-
-    }
-
-    public void slidesBrake() {
-
-        slideLeft.setPower(0);
-        slideRight.setPower(0);
     }
 
     /* -------------- Technical Innovation -------------- */
@@ -680,39 +594,5 @@ public class VirusMethods extends VirusHardware {
         if (tfod != null) {
             tfod.shutdown();
         }
-    }
-    public void updateNavTargets() {
-
-        // check all the trackable target to see which one (if any) is visible.
-        targetVisible = false;
-        for (VuforiaTrackable trackable : allTrackables) {
-            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
-                targetVisible = true;
-
-                // getUpdatedRobotLocation() will return null if no new information is available since
-                // the last time that call was made, or if the trackable is not currently visible.
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-                break;
-            }
-        }
-
-        // Provide feedback as to where the robot is located (if we know).
-        if (targetVisible) {
-            // express position (translation) of robot in inches.
-            VectorF translation = lastLocation.getTranslation();
-            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-
-            // express the rotation of the robot in degrees.
-            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-        } else {
-            telemetry.addData("Visible Target", "none");
-        }
-        telemetry.update();
     }
 }
