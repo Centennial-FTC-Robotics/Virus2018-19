@@ -29,6 +29,12 @@ public class Basic extends LinearOpMode {
     int green1;
     int blue1;
 
+    enum intake {Ball, Cube, None}
+    VirusMethods.intake slot1;
+    VirusMethods.intake slot2;
+    VirusMethods.intake[] intakeSlots = {slot1, slot2};
+    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
+
     public void runOpMode() throws InterruptedException {
         lmotor0 = hardwareMap.dcMotor.get("lmotor0");
         lmotor1 = hardwareMap.dcMotor.get("lmotor1");
@@ -75,10 +81,41 @@ public class Basic extends LinearOpMode {
             hingePower(-1.0* gamepad2.right_stick_y);
             slidePower(gamepad2.left_stick_y);
 
+            updateIntakes();
+
             telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
             telemetry.addData("Hinge Angle", hingeAngle());
 
             telemetry.update();
+        }
+    }
+
+    public double percentDiff(int num1, int num2) {
+        double diff = (((double)num1-(double)num2)/(((double)num1+(double)num2)/2))*100;
+        return diff;
+    }
+
+    public void updateIntakes(){
+        int red1 = colorSensor1.red();
+        int blue1 = colorSensor1.blue();
+        int green1 = colorSensor1.green();
+        int red2 = colorSensor1.red();
+        int blue2 = colorSensor1.blue();
+        int green2 = colorSensor1.green();
+
+        if (percentDiff(red1,blue1) > 70){
+            slot1 = VirusMethods.intake.Cube;
+        }else if ((red1 + green1 + blue1)/3 > 30){
+            slot1 = VirusMethods.intake.Ball;
+        }else{
+            slot1 = VirusMethods.intake.None;
+        }
+        if (percentDiff(red2,blue2) > 70){
+            slot2 = VirusMethods.intake.Cube;
+        }else if ((red2 + green2 + blue2)/3 > 30){
+            slot2 = VirusMethods.intake.Ball;
+        }else{
+            slot2 = VirusMethods.intake.None;
         }
     }
 

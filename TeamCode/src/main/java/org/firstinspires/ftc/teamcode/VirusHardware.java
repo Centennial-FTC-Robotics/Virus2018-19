@@ -31,12 +31,12 @@ public abstract class VirusHardware extends LinearOpMode {
     DcMotor slideRight;
     DcMotor hinge;
     //DcMotor sweeper; //
-    CRServo sweeperVex; //
-    Servo  slideLock; //
-    Servo pivot1, pivot2; //
-    Servo marker; //
-    Servo sifter; //
-    Servo outrigger;
+//    CRServo sweeperVex; //
+//    Servo  slideLock; //
+//    Servo pivot1, pivot2; //
+//    Servo marker; //
+//    Servo sifter; //
+//    Servo outrigger;
     ColorSensor colorSensor1, colorSensor2;
 
     Orientation orientation = new Orientation(AxesReference.EXTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES,0,0,0,0);
@@ -54,16 +54,16 @@ public abstract class VirusHardware extends LinearOpMode {
         rmotor0 = hardwareMap.dcMotor.get("rmotor0");
         rmotor1 = hardwareMap.dcMotor.get("rmotor1");
         hinge = hardwareMap.dcMotor.get("hinge");
-        slideLock = hardwareMap.servo.get("slideLock");
-        pivot1 = hardwareMap.servo.get("pivot1");
-        pivot2 = hardwareMap.servo.get("pivot2");
-        //sweeper = hardwareMap.dcMotor.get("sweeper");
-        sweeperVex = hardwareMap.crservo.get("sweeperVex");
-        marker = hardwareMap.servo.get("marker");
-        sifter = hardwareMap.servo.get("sifter");
+//        slideLock = hardwareMap.servo.get("slideLock");
+//        pivot1 = hardwareMap.servo.get("pivot1");
+//        pivot2 = hardwareMap.servo.get("pivot2");
+//        //sweeper = hardwareMap.dcMotor.get("sweeper");
+//        sweeperVex = hardwareMap.crservo.get("sweeperVex");
+//        marker = hardwareMap.servo.get("marker");
+//        sifter = hardwareMap.servo.get("sifter");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
-        outrigger = hardwareMap.servo.get("outrigger");
+//        outrigger = hardwareMap.servo.get("outrigger");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         colorSensor1 = hardwareMap.colorSensor.get("colorSensor1");
         colorSensor2 = hardwareMap.colorSensor.get("colorSensor2");

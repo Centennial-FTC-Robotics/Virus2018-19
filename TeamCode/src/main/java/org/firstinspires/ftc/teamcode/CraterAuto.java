@@ -12,7 +12,7 @@ public class CraterAuto extends VirusMethods {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         //initVision();
-        slideLock.setPosition(0.5);
+//        slideLock.setPosition(0.5);
 
         waitForStart();
 

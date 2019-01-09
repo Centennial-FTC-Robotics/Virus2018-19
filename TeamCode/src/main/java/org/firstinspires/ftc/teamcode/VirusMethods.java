@@ -96,10 +96,10 @@ public class VirusMethods extends VirusHardware {
         encodersMovedSpeed = 0;
         intakeState = intakeState.retracted;
         //all servo starting positions go here
-        marker.setPosition(0);
+//        marker.setPosition(0);
         intakePivot(false);
-        sifter.setPosition(0); //ball mode
-        outrigger.setPosition(0);
+//        sifter.setPosition(0); //ball mode
+//        outrigger.setPosition(0);
         //need to run initVuforia and initTfod
     }
 
@@ -235,16 +235,23 @@ public class VirusMethods extends VirusHardware {
         return diff;
     }
     public void updateIntakes(){
-        if (percentDiff(colorSensor1.red(),colorSensor1.blue()) > 70){
+        int red1 = colorSensor1.red();
+        int blue1 = colorSensor1.blue();
+        int green1 = colorSensor1.green();
+        int red2 = colorSensor1.red();
+        int blue2 = colorSensor1.blue();
+        int green2 = colorSensor1.green();
+
+        if (percentDiff(red1,blue1) > 70){
             slot1 = intake.Cube;
-        }else if ((colorSensor1.red()+colorSensor1.green()+colorSensor1.blue())/3 > 30){
+        }else if ((red1 + green1 + blue1)/3 > 30){
             slot1 = intake.Ball;
         }else{
             slot1 = intake.None;
         }
-        if (percentDiff(colorSensor2.red(),colorSensor2.blue()) > 70){
+        if (percentDiff(red2,blue2) > 70){
             slot2 = intake.Cube;
-        }else if ((colorSensor2.red()+colorSensor2.green()+colorSensor2.blue())/3 > 30){
+        }else if ((red2 + green2 + blue2)/3 > 30){
             slot2 = intake.Ball;
         }else{
             slot2 = intake.None;
@@ -317,26 +324,26 @@ public class VirusMethods extends VirusHardware {
     }
     //set hinge position
     public void hinge(double angle) {
-        slideLock.setPosition(0);
+//        slideLock.setPosition(0);
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int)(angle * (3700/90));
-        if (hinge.getCurrentPosition() < position){
-            outrigger.setPosition(1);
-        }
+//        if (hinge.getCurrentPosition() < position){
+//            outrigger.setPosition(1);
+//        }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
         while (hinge.isBusy());
-        outrigger.setPosition(0);
+//        outrigger.setPosition(0);
     }
     //set hinge power
     public void hingePower(double power){
-        if (power > 0){
-            slideLock.setPosition(0);
-            outrigger.setPosition(1);
-        }else{
-            outrigger.setPosition(0);
-        }
+//        if (power > 0){
+//            slideLock.setPosition(0);
+//            outrigger.setPosition(1);
+//        }else{
+//            outrigger.setPosition(0);
+//        }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
         if (hinge.getCurrentPosition() >= 3700) {
@@ -372,13 +379,13 @@ public class VirusMethods extends VirusHardware {
         if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
             slides(-50);
         }
-        if (up){
-            pivot1.setPosition(.5);
-            pivot2.setPosition(.5);
-        } else {
-            pivot1.setPosition(0);
-            pivot2.setPosition(1);
-        }
+//        if (up){
+//            pivot1.setPosition(.5);
+//            pivot2.setPosition(.5);
+//        } else {
+//            pivot1.setPosition(0);
+//            pivot2.setPosition(1);
+//        }
         if (originalHinge < 10){
             hinge(originalHinge);
         }
@@ -388,15 +395,15 @@ public class VirusMethods extends VirusHardware {
     }
     //drop marker
     public void dropMarker(){
-        marker.setPosition(0.65);
-        waitTime(500);
-        marker.setPosition(.35);
-        marker.setPosition(0.65);
-        waitTime(500);
-        marker.setPosition(.35);
-        marker.setPosition(0.65);
-        waitTime(500);
-        marker.setPosition(0);
+//        marker.setPosition(0.65);
+//        waitTime(500);
+//        marker.setPosition(.35);
+//        marker.setPosition(0.65);
+//        waitTime(500);
+//        marker.setPosition(.35);
+//        marker.setPosition(0.65);
+//        waitTime(500);
+//        marker.setPosition(0);
     }
     public void dehang(){
         //get on ground
@@ -408,7 +415,7 @@ public class VirusMethods extends VirusHardware {
     }
     public void intoCrater(){
         //sweeperVex.setPower(-1);
-        outrigger.setPosition(0);
+//        outrigger.setPosition(0);
         if (intakeState == intakeState.retracted){
             hinge(45);
             intakePivot(true);
@@ -423,7 +430,7 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.crater;
     }
     public void retract(){
-        outrigger.setPosition(0);
+//        outrigger.setPosition(0);
         //sweeper.setPower(0);
         if (intakeState == intakeState.crater){
             hinge(45);
@@ -439,7 +446,7 @@ public class VirusMethods extends VirusHardware {
             hinge(45);
             slides(0);
         }
-        outrigger.setPosition(1);
+//        outrigger.setPosition(1);
         hinge(90);
         intakePivot(true);
         slides(3500);
