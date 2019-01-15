@@ -70,7 +70,7 @@ public class Test extends VirusMethods {
         if(haveslides) {
             //extend slides to max
             showTelemetry("extending slide to max");
-            slides(-7300);
+            slides(slideMax);
             waitTime(500);
 
             //retract slides

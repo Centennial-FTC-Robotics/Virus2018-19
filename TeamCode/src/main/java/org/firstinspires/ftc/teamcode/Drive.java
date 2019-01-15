@@ -37,7 +37,6 @@ public class Drive extends VirusMethods {
                 runDriveMotors(factor * leftSpeed, factor * rightSpeed);
             }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
-
                 slidePower(-gamepad2.left_stick_y);
             }
             //hinge follows joystick
@@ -115,8 +114,8 @@ public class Drive extends VirusMethods {
                 }
             }
 
-//            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
-//            telemetry.addData("Right slide", slideRight.getCurrentPosition());
+            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
+            telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
 //            telemetry.addData("Hinge Angle", hingeAngle());
             telemetry.addData("Intake state", intakeState);

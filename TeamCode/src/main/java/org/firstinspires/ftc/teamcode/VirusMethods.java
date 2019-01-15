@@ -39,6 +39,7 @@ public class VirusMethods extends VirusHardware {
     private final int wheelDiameterIn = 4;
 
     // slides
+    int slideMax = 4380;
     //private int encodersMovedStronk;
     private int encodersMovedSpeed;
     //private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
@@ -289,7 +290,8 @@ public class VirusMethods extends VirusHardware {
         showTelemetry("moving slides");
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        position = Range.clip(position, 0, 7300);
+        position = Range.clip(position, 0, slideMax);
+//        position = Range.clip(position, 0, 7300);
         Drive.slidePos = position;
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
@@ -300,7 +302,7 @@ public class VirusMethods extends VirusHardware {
 
     //sets slide to specified INCH position
     public void slidesINCH(double inch){
-        int position = (int)(inch * 7300/36);
+        int position = (int)(inch * (double)slideMax/36.0);
         slides(position);
     }
 
@@ -321,7 +323,7 @@ public class VirusMethods extends VirusHardware {
             }
         }
         //if completely retracted, only move if extending
-        else if (slideLeft.getCurrentPosition() >= 7300 || slideRight.getCurrentPosition() >= 7300){
+        else if (slideLeft.getCurrentPosition() >= slideMax || slideRight.getCurrentPosition() >= slideMax){
             if (power < 0) {
                 slideLeft.setPower(power);
                 slideRight.setPower(power);
