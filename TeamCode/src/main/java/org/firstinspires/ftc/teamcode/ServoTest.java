@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -11,10 +12,12 @@ public class ServoTest extends VirusMethods {
     public void runOpMode()throws InterruptedException {
         super.runOpMode();
         waitForStart();
-        while(opModeIsActive()){
-            hinge.setPower(-0.75* gamepad2.right_stick_y);
-            telemetry.addData("Hinge",hinge.getCurrentPosition());
-            telemetry.update();
-        }
+        move(24, (float) 1);
+        telemetry.addData("Point", "1");
+        telemetry.update();
+//        waitTime(500);
+//
+//        telemetry.addData("Point", "2");
+//        telemetry.update();
     }
 }

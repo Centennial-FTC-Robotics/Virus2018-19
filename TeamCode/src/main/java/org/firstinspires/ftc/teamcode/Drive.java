@@ -1,25 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
-import java.util.List;
-import java.util.Locale;
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
 //0 is front, 1 is back
@@ -29,40 +12,61 @@ public class Drive extends VirusMethods {
     float rightSpeed;
     float factor;
     ElapsedTime time = new ElapsedTime();
+    private String action ="";
+    public static boolean needTelemetry = true;
+    public static int slidePos = 0;
+
 
     public void runOpMode() throws InterruptedException {
+        if(needTelemetry){
+            action = "starting drive opmode";
+            telemetry.addData("task", action);
+        }
         super.runOpMode();
+        showTelemetry("resetting time");
         time.reset();
+        showTelemetry("waiting for start");
         waitForStart();
         while (opModeIsActive()) {
-//            angles  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//            gravity = imu.getGravity();
+            showTelemetry("opmode is active");
             //drive system
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y - Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x, -1, 1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y + Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x, -1, 1);
             factor = (float) (0.7 + 0.3 * gamepad1.right_trigger - 0.5 * gamepad1.left_trigger);
-            runDriveMotors(factor * leftSpeed, factor * rightSpeed);
+            if(!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x !=0)) {
+                runDriveMotors(factor * leftSpeed, factor * rightSpeed);
+            }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
 
-                slidePower(gamepad2.left_stick_y);
+                slidePower(-gamepad2.left_stick_y);
             }
             //hinge follows joystick
             hingePower(-1.0 * gamepad2.right_stick_y);
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
-//            if(gamepad2.a){
-//                retract();
-//            }
-//            if(gamepad2.b && !gamepad2.start){
-//                standby();
-//            }
-//            if(gamepad2.y){
-//                intoCrater();
-//            }
-//            if(gamepad2.x){
-//                score();
-//            }
+            if(gamepad2.a){
+                showTelemetry("retracting slides )button a)");
+                retract();
+            }
+            if(gamepad2.start && gamepad2.b){
+                while(gamepad2.start || gamepad2.b){
+                    showTelemetry("waiting while initializing");
+                    //do nothing
+                }
+            }
+            if(gamepad2.b && !gamepad2.start){
+                showTelemetry("going into standby (button b)");
+                standby();
+            }
+            if(gamepad2.y){
+                showTelemetry("going into crater (button y)");
+                intoCrater();
+            }
+            if(gamepad2.x){
+                showTelemetry("scoring (button x)");
+                score();
+            }
 //            //claw down
 //            if(gamepad2.dpad_down){
 //                intakePivot(false);
@@ -104,17 +108,21 @@ public class Drive extends VirusMethods {
 //            if(gamepad2.dpad_left){
 //                sifter.setPosition(0);
 //            }
-//            if(intakeState == intakeState.crater){
-//                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
-//                    double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
-//                    runDriveMotors((float) (turnFactor*gamepad2.left_stick_x), (float) (-turnFactor*gamepad2.left_stick_x));
-//                }
-//            }
+            if(intakeState == intakeState.crater){
+                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
+                    double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
+                    runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));
+                }
+            }
 
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
-            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
-            telemetry.addData("Hinge Angle", hingeAngle());
+//            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
+//            telemetry.addData("Hinge Angle", hingeAngle());
+            telemetry.addData("Intake state", intakeState);
+//            telemetry.addData("Left Slide Encoder", slideLeft.getCurrentPosition());
+//            telemetry.addData("Right Slide Encoder", slideRight.getCurrentPosition());
+            telemetry.addData("Heading",getRotationinDimension(('Z')));
 //            telemetry.addData("Slide Left", slideLeft.getCurrentPosition());
 //            telemetry.addData("Slide Right", slideRight.getCurrentPosition());
 //            telemetry.addData("Gamepad 2 Right Joystick y", gamepad2.right_stick_y);
@@ -127,6 +135,11 @@ public class Drive extends VirusMethods {
             //idle();
 
         }
+    }
+
+    private void showTelemetry(String action){
+            this.action = action;
+            telemetry.update();
     }
 
 }

@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -22,13 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 /**
  * Created by keert on 10/26/2018.
@@ -38,7 +30,7 @@ public class VirusMethods extends VirusHardware {
     //motors
     private final DcMotor[] leftDriveMotors = {lmotor0, lmotor1};
     private final DcMotor[] rightDriveMotors = {rmotor0, rmotor1};
-    private final DcMotor[] driveMotors = {lmotor0, lmotor1, rmotor0, rmotor1};
+    private DcMotor[] driveMotors = new DcMotor[4];
 
     // motor movement
     private final int driveTicksPerRev = 560;
@@ -81,14 +73,23 @@ public class VirusMethods extends VirusHardware {
     private VuforiaTrackables targetsRoverRuckus;
     private VuforiaLocalizer.Parameters parameters;
     private List<VuforiaTrackable> allTrackables;
+    private String action = "";
 
     //distance calculation
     @Override
     public void runOpMode() throws InterruptedException {
+        if(Drive.needTelemetry){
+            action = "starting virus hardware opmode";
+            telemetry.addData("task", action);
+        }
         super.runOpMode();
+        showTelemetry("init drive motors");
+        driveMotors[0] = lmotor0;
+        driveMotors[1] = lmotor1;
+        driveMotors[2] = rmotor0;
+        driveMotors[3] = rmotor1;
+        showTelemetry("init imu");
         initializeIMU();
-        Thread.sleep(1000);
-        updateOrientation();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
@@ -106,6 +107,7 @@ public class VirusMethods extends VirusHardware {
     /* -------------- Initialization -------------- */
 
     private void initVuforia() {
+        showTelemetry("initializing vuforia");
         //create parameter object and pass it to create Vuforia engine
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -122,30 +124,40 @@ public class VirusMethods extends VirusHardware {
 //    }
 
     public void initializeIMU() {
+        showTelemetry("initializing imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled       = true;
-        parameters.useExternalCrystal   = true;
-        parameters.mode                 = BNO055IMU.SensorMode.IMU;
-        parameters.loggingTag           = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
+
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
         imu.initialize(parameters);
         while (opModeIsActive()&&!imu.isGyroCalibrated());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            telemetry.addData("oof", "oof");
+            telemetry.update();
+        }
         updateOrientation();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
+
     }
 
     /* -------------- Status Methods -------------- */
 
     public boolean motorsBusy() {
+        showTelemetry("motors are busy");
         boolean busy = false;
-        for (DcMotor motor : driveMotors) {
-            if (motor.isBusy()) {
+        for (int i = 0; i < 4; i++) {
+            if (driveMotors[i].isBusy()) {
                 busy = true;
             }
         }
@@ -186,15 +198,19 @@ public class VirusMethods extends VirusHardware {
 
     String formatAngle(AngleUnit angleUnit, double angle)
     {
+
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
     String formatDegrees(double degrees)
     {
+
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
     public double getHeading(){
-        return Double.parseDouble(formatAngle(angles.angleUnit, angles.firstAngle));
+
+
+        return Double.parseDouble(formatAngle(orientation.angleUnit, orientation.firstAngle));
     }
     /* -------------- Processing -------------- */
 
@@ -223,10 +239,9 @@ public class VirusMethods extends VirusHardware {
     private int convertInchToEncoder(float dist) {
 
         float wheelRotations = (float)(dist / (wheelDiameterIn * Math.PI));
-        float motorRotations = (22/24) * (wheelRotations);
+        float motorRotations = (22.0f/24.0f) * (wheelRotations);
         float encoderCounts = (float) (537.6 * motorRotations);
         int position = Math.round(encoderCounts);
-
         return position;
     }
 
@@ -235,6 +250,7 @@ public class VirusMethods extends VirusHardware {
         return diff;
     }
     public void updateIntakes(){
+        showTelemetry("updating intakes");
         int red1 = colorSensor1.red();
         int blue1 = colorSensor1.blue();
         int green1 = colorSensor1.green();
@@ -261,6 +277,7 @@ public class VirusMethods extends VirusHardware {
 
     //movement based on speeds
     public void runDriveMotors(float leftSpeed, float rightSpeed) {
+        showTelemetry("running drive motors");
         lmotor0.setPower(Range.clip(leftSpeed, -1, 1));
         lmotor1.setPower(Range.clip(leftSpeed, -1, 1));
         rmotor0.setPower(Range.clip(rightSpeed, -1, 1));
@@ -269,14 +286,16 @@ public class VirusMethods extends VirusHardware {
 
     //sets slide to certain position
     public void slides(int position) {
-
+        showTelemetry("moving slides");
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         position = Range.clip(position, 0, 7300);
+        Drive.slidePos = position;
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
         slideLeft.setPower(0.7);
         slideRight.setPower(0.7);
+        while (slideLeft.isBusy() || slideRight.isBusy());
     }
 
     //sets slide to specified INCH position
@@ -287,7 +306,7 @@ public class VirusMethods extends VirusHardware {
 
     //set slide power
     public void slidePower(double power){
-
+        showTelemetry("setting slide power");
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at max extension, only move if retracting
@@ -325,6 +344,7 @@ public class VirusMethods extends VirusHardware {
     //set hinge position
     public void hinge(double angle) {
 //        slideLock.setPosition(0);
+        showTelemetry("moving hinge to ");
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int)(angle * (3700/90));
@@ -344,6 +364,7 @@ public class VirusMethods extends VirusHardware {
 //        }else{
 //            outrigger.setPosition(0);
 //        }
+        showTelemetry("setting hinge power");
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
         if (hinge.getCurrentPosition() >= 3700) {
@@ -370,31 +391,33 @@ public class VirusMethods extends VirusHardware {
     }
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up){
-        double originalHinge = hingeAngle();
-        if (originalHinge < 10){
-            hinge(10);
-            telemetry.addData("Hinge","Moving Up");
-        }
-        int originalSlide = slideLeft.getCurrentPosition();
-        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
-            slides(-50);
-        }
-//        if (up){
-//            pivot1.setPosition(.5);
-//            pivot2.setPosition(.5);
-//        } else {
-//            pivot1.setPosition(0);
-//            pivot2.setPosition(1);
+//        showTelemetry("moving intake pivot to up: " + up);
+//        double originalHinge = hingeAngle();
+//        if (originalHinge < 10){
+//            hinge(10);
+//            telemetry.addData("Hinge","Moving Up");
 //        }
-        if (originalHinge < 10){
-            hinge(originalHinge);
-        }
-        if (originalSlide > -50) {
-            slides(originalSlide);
-        }
+//        int originalSlide = slideLeft.getCurrentPosition();
+//        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
+//            slides(-50);
+//        }
+////        if (up){
+////            pivot1.setPosition(.5);
+////            pivot2.setPosition(.5);
+////        } else {
+////            pivot1.setPosition(0);
+////            pivot2.setPosition(1);
+////        }
+//        if (originalHinge < 10){
+//            hinge(originalHinge);
+//        }
+//        if (originalSlide > -50) {
+//            slides(originalSlide);
+//        }
     }
     //drop marker
     public void dropMarker(){
+        showTelemetry("dropping marker");
 //        marker.setPosition(0.65);
 //        waitTime(500);
 //        marker.setPosition(.35);
@@ -406,6 +429,7 @@ public class VirusMethods extends VirusHardware {
 //        marker.setPosition(0);
     }
     public void dehang(){
+        showTelemetry("dehanging");
         //get on ground
         slides(3500);
         hinge(90);
@@ -416,6 +440,7 @@ public class VirusMethods extends VirusHardware {
     public void intoCrater(){
         //sweeperVex.setPower(-1);
 //        outrigger.setPosition(0);
+        showTelemetry("going into crater");
         if (intakeState == intakeState.retracted){
             hinge(45);
             intakePivot(true);
@@ -427,9 +452,11 @@ public class VirusMethods extends VirusHardware {
         slides(3000);
         intakePivot(false);
         hinge(0);
+
         intakeState = intakeState.crater;
     }
     public void retract(){
+        showTelemetry("retracting slides");
 //        outrigger.setPosition(0);
         //sweeper.setPower(0);
         if (intakeState == intakeState.crater){
@@ -442,6 +469,7 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.retracted;
     }
     public void score(){
+        showTelemetry("scoring");
         if (intakeState == intakeState.crater){
             hinge(45);
             slides(0);
@@ -454,6 +482,7 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.lander;
     }
     public void standby(){
+        showTelemetry("going into standby");
         hinge(45);
         slides(0);
         intakeState = intakeState.standby;
@@ -462,7 +491,7 @@ public class VirusMethods extends VirusHardware {
     public void move(float distance) {
         //converting from linear distance -> wheel rotations ->
         // motor rotations -> encoder counts, then round
-
+        showTelemetry("moving " + distance + "inches");
         int position = convertInchToEncoder(distance);
 
         for (DcMotor motor : driveMotors) {
@@ -477,24 +506,48 @@ public class VirusMethods extends VirusHardware {
     public void move(float distance, float speed) {
         //converting from linear distance -> wheel rotations ->
         // motor rotations -> encoder counts, then round
-        for (int i = 0; i < driveMotors.length; i++) {
-            driveMotors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        showTelemetry("moving " + distance + "inches");
+//        for (int i = 0; i < driveMotors.length; i++) {
+//            driveMotors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        }
+        lmotor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lmotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rmotor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rmotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForMotors();
 
         int position = convertInchToEncoder(distance);
 
-        for (int i = 0; i < driveMotors.length; i++) {
-            driveMotors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            driveMotors[i].setTargetPosition(-position);
-            driveMotors[i].setPower(speed);
-        }
+//        for (int i = 0; i < driveMotors.length; i++) {
+//            driveMotors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            driveMotors[i].setTargetPosition(-position);
+//            driveMotors[i].setPower(speed);
+//        }
+        lmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lmotor0.setTargetPosition(-position);
+        lmotor1.setTargetPosition(-position);
+        rmotor0.setTargetPosition(-position);
+        rmotor1.setTargetPosition(-position);
+
+        lmotor0.setPower(speed);
+        lmotor1.setPower(speed);
+        rmotor0.setPower(speed);
+        rmotor1.setPower(speed);
+
         waitForMotors();
         runDriveMotors(0, 0);
-        for (int i = 0; i < driveMotors.length; i++) {
-            driveMotors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
+//        for (int i = 0; i < driveMotors.length; i++) {
+//            driveMotors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        }
+        lmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -505,12 +558,12 @@ public class VirusMethods extends VirusHardware {
 
     public void turnAbsolute(double targetAngle, double speed) {
         double currentAngle = getHeading();
+
         int direction;
         if (targetAngle != currentAngle) {
 
             double angleDifference = getAngleDist(targetAngle, currentAngle);
             direction = getAngleDir(targetAngle, currentAngle);
-
             double turnRate = (angleDifference * speed) / 90;
 
             while (opModeIsActive() && angleDifference > 1) {
@@ -518,8 +571,7 @@ public class VirusMethods extends VirusHardware {
                 angleDifference = getAngleDist(targetAngle, getRotationinDimension('Z'));
                 direction = getAngleDir(targetAngle, getRotationinDimension(('Z')));
                 turnRate = (angleDifference * speed) / 90;
-                telemetry.addData("angleDifference: ", angleDifference);
-                telemetry.addData("currentAngle: ", getRotationinDimension('Z'));
+                telemetry.addData("Current Angle", getRotationinDimension(('Z')));
                 telemetry.update();
             }
 
@@ -543,7 +595,8 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void updateOrientation (){
-        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        showTelemetry("updating orientation");
+        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     /* -------------- Technical Innovation -------------- */
@@ -601,5 +654,9 @@ public class VirusMethods extends VirusHardware {
         if (tfod != null) {
             tfod.shutdown();
         }
+    }
+    private void showTelemetry(String action){
+        this.action = action;
+        telemetry.update();
     }
 }

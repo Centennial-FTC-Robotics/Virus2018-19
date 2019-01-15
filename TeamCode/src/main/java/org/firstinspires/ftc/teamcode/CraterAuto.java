@@ -8,8 +8,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class CraterAuto extends VirusMethods {
 
+    private String action = "";
+    private boolean needTelemetry = true;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        if(needTelemetry){
+            action = "starting crater auto opmode";
+            telemetry.addData("task", action);
+        }
         super.runOpMode();
         //initVision();
 //        slideLock.setPosition(0.5);
@@ -17,28 +24,22 @@ public class CraterAuto extends VirusMethods {
         waitForStart();
 
         ElapsedTime timer = new ElapsedTime();
-        String action = "initializing";
-        telemetry.addData("current task", action);
+        showTelemetry("initializing");
 
         int scanAngle = 12; //positive angle is left turn
         int knockAngle = 26;
         double turnSpeed = 0.3;
         float moveSpeed = 0.4f;
         String goldPos = "bad";
-        action = "dehanging";
-        telemetry.update();
+        showTelemetry("dehanging");
         dehang();
-        action = "initializing IMU";
-        telemetry.update();
+        showTelemetry("initializing imu");
         initializeIMU();
-
-        action = "turning left 10 degrees";
-        telemetry.update();
+        showTelemetry("turning left 10 degrees");
         turnRelative(10,0.5);
 
         //figure out gold position
-        action = "finding gold";
-        telemetry.update();
+        showTelemetry("finding gold");
         while (opModeIsActive() && timer.seconds() < 5 && goldPos.equals("bad")) {
             telemetry.addData("Timer" , timer.seconds());
             goldPos = autoFindGold();
@@ -46,70 +47,58 @@ public class CraterAuto extends VirusMethods {
             telemetry.update();
         }
         closeTfod();
-        action = "raising hinge to 0 degrees, finding gold";
-        telemetry.update();
+        showTelemetry("raising hinge to 0 degrees, finding gold");
         hinge(0);
         //turn and move to hit (if no detect just move on)
         //extends slides 2.45 ft to hit mineral
         if (!goldPos.equals("bad")){
-            action = "found gold: " +goldPos;
-            telemetry.update();
+            showTelemetry("found gold: " + goldPos);
             if (goldPos.equals("Left")) {
-                action = "turning absolute left " + knockAngle +" degrees";
-                telemetry.update();
+                showTelemetry("turning absolute left " + knockAngle +" degrees");
                 turnAbsolute(knockAngle, turnSpeed);
             }
             else if (goldPos.equals("Center")) {
-                action = "turning absolute left 0 degrees";
-                telemetry.update();
+                showTelemetry("turning absolute 0 degrees");
                 turnAbsolute(0, turnSpeed);
             }
             else if (goldPos.equals("Right")) {
-                action = "turning absolute right " + knockAngle +" degrees";
-                telemetry.update();
+                showTelemetry("turning absolute right " + knockAngle +" degrees");
                 turnAbsolute(-knockAngle, turnSpeed);
             }
-            action = "extending slides to knock gold";
-            telemetry.update();
+            showTelemetry("extending slide to knock gold");
             slides(5960);
             waitTime(500);
-            action = "retracting slides";
-            telemetry.update();
+            showTelemetry("retracting slides");
             slides(0);
         }
         //go to wall (REPLACE WITH PROX SENSOR CODE)
-        action = "turning absolute left 45 degrees";
-        telemetry.update();
+        showTelemetry("turning absolute left 45 degrees");
         turnAbsolute(45, turnSpeed);
-        action = "going forward 40 inches";
-        telemetry.update();
+        showTelemetry("going forward 40 inches");
         move(40, (float) 0.5);
 
         //go to depot, drop marker (prox sensor too)
-        action = "turning relative left 90 degrees";
-        telemetry.update();
+        showTelemetry("turning relative left 90 degrees");
         turnRelative(90, turnSpeed);
-        action = "going forward 54 inches";
-        telemetry.update();
+        showTelemetry("going forward 54 inches");
         move(54, (float) 0.5);
         action = "turning relative left 90 degrees";
         telemetry.update();
         turnRelative(90,0.5);
-        action = "dropping marker";
-        telemetry.update();
+        showTelemetry("dropping marker");
         dropMarker();
 
         //turn around, go to crater
-        action = "turning relative left 90 degrees";
-        telemetry.update();
+        showTelemetry("turning relative left 90 degrees");
         turnRelative(90,0.5);
-        action = "going forward 72 inches";
-        telemetry.update();
+        showTelemetry("going forward 72 inches");
         move(72, (float) 0.5);
-        action = "going into crater";
-        telemetry.update();
+        showTelemetry("going into crater");
         intoCrater();
-        action = "finish autonomous";
+        showTelemetry("finish autonomous");
+    }
+    private void showTelemetry(String action){
+        this.action = action;
         telemetry.update();
     }
 }

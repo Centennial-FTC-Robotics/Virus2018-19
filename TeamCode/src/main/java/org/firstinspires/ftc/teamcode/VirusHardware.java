@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
 // sensors & sensorSetup
@@ -49,10 +50,14 @@ public abstract class VirusHardware extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        lmotor0 = hardwareMap.dcMotor.get("lmotor0");
-        lmotor1 = hardwareMap.dcMotor.get("lmotor1");
-        rmotor0 = hardwareMap.dcMotor.get("rmotor0");
-        rmotor1 = hardwareMap.dcMotor.get("rmotor1");
+        lmotor0 = (DcMotorEx) hardwareMap.get(DcMotor.class, "lmotor0");
+        lmotor1 = (DcMotorEx) hardwareMap.get(DcMotor.class, "lmotor1");
+        rmotor0 = (DcMotorEx) hardwareMap.get(DcMotor.class, "rmotor0");
+        rmotor1 = (DcMotorEx) hardwareMap.get(DcMotor.class, "rmotor1");
+//        lmotor0 = (DcMotorEx)hardwareMap.dcMotor.get("lmotor0");
+//        lmotor1 = (DcMotorEx)hardwareMap.dcMotor.get("lmotor1");
+//        rmotor0 = (DcMotorEx)hardwareMap.dcMotor.get("rmotor0");
+//        rmotor1 = (DcMotorEx)hardwareMap.dcMotor.get("rmotor1");
         hinge = hardwareMap.dcMotor.get("hinge");
 //        slideLock = hardwareMap.servo.get("slideLock");
 //        pivot1 = hardwareMap.servo.get("pivot1");
@@ -74,19 +79,19 @@ public abstract class VirusHardware extends LinearOpMode {
 
         slideRight.setDirection(DcMotor.Direction.REVERSE);
 
-        lmotor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lmotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rmotor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rmotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lmotor0.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        lmotor1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rmotor0.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rmotor1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         slideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hinge.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lmotor0.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rmotor0.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        lmotor1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rmotor1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -96,7 +101,6 @@ public abstract class VirusHardware extends LinearOpMode {
         initialHeading = orientation.firstAngle;
         initialPitch = orientation.secondAngle;
         initialRoll = orientation.thirdAngle;
-
 
         waitForStart();
     }
