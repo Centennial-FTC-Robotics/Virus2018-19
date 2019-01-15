@@ -38,8 +38,8 @@ public class VirusMethods extends VirusHardware {
     private final int wheelSprocket = 22;
     private final int wheelDiameterIn = 4;
 
-    // slides
-    int slideMax = 4380;
+    // slides, full = 7300
+    int slideMax = 5475;
     //private int encodersMovedStronk;
     private int encodersMovedSpeed;
     //private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
