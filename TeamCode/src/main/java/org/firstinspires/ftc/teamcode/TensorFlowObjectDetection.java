@@ -95,6 +95,9 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
+                            int goldMineralY = -1;
+                            int silverMineral1Y = -1;
+                            int silverMineral2Y = -1;
 //                            ArrayList<Float> heights = new ArrayList<Float>();
 //                            ArrayList<Float> widths = new ArrayList<Float>();
 //                            //exclude detected object that are too big
@@ -135,9 +138,9 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             if (goldMineralX==-1){
                                 goldPosition = "Right";
                             }else if(goldMineralX < silverMineral1X){
-                                goldPosition = "Left";
-                            }else if(goldMineralX > silverMineral1X){
                                 goldPosition = "Center";
+                            }else if(goldMineralX > silverMineral1X){
+                                goldPosition = "Left";
                             }
                             telemetry.addData("Gold Position", goldPosition);
                         }

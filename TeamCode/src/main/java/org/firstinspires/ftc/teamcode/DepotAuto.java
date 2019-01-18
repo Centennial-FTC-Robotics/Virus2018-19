@@ -38,6 +38,7 @@ public class DepotAuto extends VirusMethods {
 
         //figure out gold position
         showTelemetry("finding gold");
+        timer.reset();
         while (opModeIsActive() && timer.seconds() < 5 && goldPos.equals("bad")) {
             telemetry.addData("Timer" , timer.seconds());
             goldPos = autoFindGold();
@@ -73,6 +74,8 @@ public class DepotAuto extends VirusMethods {
 
 
         }
+        turnAbsolute(0, turnSpeed);
+        move(-3, 0.5f);
         //go to wall
         showTelemetry("turning absolute left 45 degrees");
         turnAbsolute(45, turnSpeed);
@@ -94,7 +97,7 @@ public class DepotAuto extends VirusMethods {
 
         //go to crater
         showTelemetry("going forward 72 inches");
-        move(72, (float) 0.5);
+        move(63, (float) 0.5);
         showTelemetry("going into crater");
         telemetry.update();
         intoCrater();

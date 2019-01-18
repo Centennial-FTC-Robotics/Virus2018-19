@@ -18,19 +18,18 @@ public class CraterAuto extends VirusMethods {
             telemetry.addData("task", action);
         }
         super.runOpMode();
-        //initVision();
+        initVision();
 //        slideLock.setPosition(0.5);
 
         waitForStart();
 
-        ElapsedTime timer = new ElapsedTime();
         showTelemetry("initializing");
 
         int scanAngle = 12; //positive angle is left turn
         int knockAngle = 26;
         double turnSpeed = 0.3;
         float moveSpeed = 0.4f;
-        String goldPos = "bad";
+        String goldPos = "";
         showTelemetry("dehanging");
         dehang();
         showTelemetry("initializing imu");
@@ -40,7 +39,10 @@ public class CraterAuto extends VirusMethods {
 
         //figure out gold position
         showTelemetry("finding gold");
-        while (opModeIsActive() && timer.seconds() < 5 && goldPos.equals("bad")) {
+        ElapsedTime timer = new ElapsedTime();
+        telemetry.addData("Timer", timer.seconds());
+        timer.reset();
+        while (opModeIsActive() && timer.seconds() < 5 && goldPos.equals("")) {
             telemetry.addData("Timer" , timer.seconds());
             goldPos = autoFindGold();
             telemetry.addData("Gold Position" , goldPos);
@@ -48,17 +50,16 @@ public class CraterAuto extends VirusMethods {
         }
         closeTfod();
         showTelemetry("raising hinge to 0 degrees, finding gold");
-        hinge(0);
+        //hinge(0);
         //turn and move to hit (if no detect just move on)
         //extends slides 2.45 ft to hit mineral
-        if (!goldPos.equals("bad")){
-            showTelemetry("found gold: " + goldPos);
+        if (!goldPos.equals("")){
+            //showTelemetry("found gold: " + goldPos);
+            telemetry.addData("Turning to", goldPos);
             if (goldPos.equals("Left")) {
-                showTelemetry("turning absolute left " + knockAngle +" degrees");
                 turnAbsolute(knockAngle, turnSpeed);
             }
             else if (goldPos.equals("Center")) {
-                showTelemetry("turning absolute 0 degrees");
                 turnAbsolute(0, turnSpeed);
             }
             else if (goldPos.equals("Right")) {
@@ -66,11 +67,17 @@ public class CraterAuto extends VirusMethods {
                 turnAbsolute(-knockAngle, turnSpeed);
             }
             showTelemetry("extending slide to knock gold");
-            slides(5960);
+            //slides(5960);
             waitTime(500);
             showTelemetry("retracting slides");
-            slides(0);
+            //slides(0);
         }
+        if(goldPos.equals("")){
+            telemetry.addData("Did not find gold", "nicht gut");
+        }
+        //realign self
+        turnAbsolute(0, turnSpeed);
+        move(-3, 0.5f);
         //go to wall (REPLACE WITH PROX SENSOR CODE)
         showTelemetry("turning absolute left 45 degrees");
         turnAbsolute(45, turnSpeed);
@@ -92,7 +99,7 @@ public class CraterAuto extends VirusMethods {
         showTelemetry("turning relative left 90 degrees");
         turnRelative(90,0.5);
         showTelemetry("going forward 72 inches");
-        move(72, (float) 0.5);
+        move(63, (float) 0.5);
         showTelemetry("going into crater");
         intoCrater();
         showTelemetry("finish autonomous");
