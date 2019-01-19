@@ -634,7 +634,6 @@ public class VirusMethods extends VirusHardware {
     public String autoFindGold() {
         //added:
         String goldPosition = "";
-
         if (opModeIsActive()) {
             if (tfod != null) {
                 tfod.activate();
@@ -646,31 +645,34 @@ public class VirusMethods extends VirusHardware {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null) {
                     telemetry.addData("# Object Detected", updatedRecognitions.size());
+
                     if (updatedRecognitions.size() == 2) {
                         int goldMineralX = -1;
                         int silverMineral1X = -1;
                         int silverMineral2X = -1;
-
+                        telemetry.addData("Point",3);
+                        telemetry.update();
                         //gets x positions for each mineral detected
                         for (Recognition recognition : updatedRecognitions) {
                             if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                goldMineralX = (int) recognition.getBottom();
+                                goldMineralX = (int) recognition.getLeft();
                             } else if (silverMineral1X == -1) {
-                                silverMineral1X = (int) recognition.getBottom();
+                                silverMineral1X = (int) recognition.getLeft();
                             } else {
-                                silverMineral2X = (int) recognition.getBottom();
+                                silverMineral2X = (int) recognition.getLeft();
                             }
                         }
-
+                        telemetry.addData("G Mineral Position", goldMineralX);
+                        telemetry.addData("S1 Mineral Position", silverMineral1X);
+                        telemetry.addData("S2 Mineral Position", silverMineral2X);
                         //determines position of gold mineral
                         if (goldMineralX == -1) {
                             goldPosition = "Right";
-                        } else if (goldMineralX < silverMineral1X) {
-                            goldPosition = "Center";
                         } else if (goldMineralX > silverMineral1X) {
+                            goldPosition = "Center";
+                        } else if (goldMineralX < silverMineral1X) {
                             goldPosition = "Left";
                         }
-                        telemetry.addData("Gold Position", goldPosition);
                     }
                     telemetry.update();
                 }

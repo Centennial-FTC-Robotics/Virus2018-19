@@ -95,9 +95,6 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
-                            int goldMineralY = -1;
-                            int silverMineral1Y = -1;
-                            int silverMineral2Y = -1;
 //                            ArrayList<Float> heights = new ArrayList<Float>();
 //                            ArrayList<Float> widths = new ArrayList<Float>();
 //                            //exclude detected object that are too big
@@ -116,11 +113,11 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             //gets x positions for each mineral detected
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                    goldMineralX = (int) recognition.getBottom();
+                                    goldMineralX = (int) recognition.getLeft();
                                 } else if (silverMineral1X == -1) {
-                                    silverMineral1X = (int) recognition.getBottom();
+                                    silverMineral1X = (int) recognition.getLeft();
                                 } else {
-                                    silverMineral2X = (int) recognition.getBottom();
+                                    silverMineral2X = (int) recognition.getLeft();
                                 }
 //                                heights.add(recognition.getHeight());
 //                                widths.add(recognition.getWidth());
@@ -129,17 +126,17 @@ public class TensorFlowObjectDetection extends LinearOpMode {
 //                                telemetry.addData("Height "+i, heights.get(i));
 //                                telemetry.addData("Width "+i, widths.get(i));
 //                            }
-                            telemetry.addData("G Mineral Position", goldMineralX);
-                            telemetry.addData("S1 Mineral Position", silverMineral1X);
-                            telemetry.addData("S2 Mineral Position", silverMineral2X);
+                            telemetry.addData("G Mineral Position X", goldMineralX);
+                            telemetry.addData("S1 Mineral Position X", silverMineral1X);
+                            telemetry.addData("S2 Mineral Position X", silverMineral2X);
 
                             //determines position of gold mineral
                             String goldPosition = "";
                             if (goldMineralX==-1){
                                 goldPosition = "Right";
-                            }else if(goldMineralX < silverMineral1X){
-                                goldPosition = "Center";
                             }else if(goldMineralX > silverMineral1X){
+                                goldPosition = "Center";
+                            }else if(goldMineralX < silverMineral1X){
                                 goldPosition = "Left";
                             }
                             telemetry.addData("Gold Position", goldPosition);

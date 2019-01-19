@@ -9,15 +9,16 @@ import com.qualcomm.robotcore.util.Range;
  */
 @Autonomous(name="ServoTest", group="Autonomous")
 public class ServoTest extends VirusMethods {
+    String goldPos = "bad";
     public void runOpMode()throws InterruptedException {
         super.runOpMode();
+        initVision();
         waitForStart();
-        move(24, (float) 1);
-        telemetry.addData("Point", "1");
-        telemetry.update();
-//        waitTime(500);
-//
-//        telemetry.addData("Point", "2");
-//        telemetry.update();
+        while (opModeIsActive()){
+            goldPos = autoFindGold();
+            telemetry.addData("Gold Position" , goldPos);
+            telemetry.update();
+            waitTime(500);
+        }
     }
 }
