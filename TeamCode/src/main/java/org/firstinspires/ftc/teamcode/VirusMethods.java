@@ -40,6 +40,8 @@ public class VirusMethods extends VirusHardware {
 
     // slides, full = 7300
     int slideMax = 5475;
+
+    int hingeMin = 0;
     //private int encodersMovedStronk;
     private int encodersMovedSpeed;
 
@@ -61,7 +63,6 @@ public class VirusMethods extends VirusHardware {
     intake slot2;
     intake[] intakeSlots = {slot1, slot2};
     ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
-
     // simple conversion
     private static final float mmPerInch = 25.4f;
 
@@ -108,7 +109,7 @@ public class VirusMethods extends VirusHardware {
 //        marker.setPosition(0);
         intakePivot(false);
 //        sifter.setPosition(0); //ball mode
-//        outrigger.setPosition(0);
+        outrigger.setPosition(0);
         //need to run initVuforia and initTfod
     }
 
@@ -369,23 +370,23 @@ public class VirusMethods extends VirusHardware {
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
-//        if (hinge.getCurrentPosition() < position){
-//            outrigger.setPosition(1);
-//        }
+        if (hinge.getCurrentPosition() < position){
+            outrigger.setPosition(1);
+        }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
         while (hinge.isBusy()) ;
-//        outrigger.setPosition(0);
+        outrigger.setPosition(0);
     }
 
     //set hinge power
     public void hingePower(double power) {
-//        if (power > 0){
+        if (power > 0){
 //            slideLock.setPosition(0);
-//            outrigger.setPosition(1);
-//        }else{
-//            outrigger.setPosition(0);
-//        }
+            outrigger.setPosition(1);
+        }else{
+            outrigger.setPosition(0);
+        }
         showTelemetry("setting hinge power");
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
@@ -397,7 +398,7 @@ public class VirusMethods extends VirusHardware {
             }
         }
         //if at 0 degrees, only move if increasing angle
-        else if (hinge.getCurrentPosition() <= 0) {
+        else if (hinge.getCurrentPosition() <= hingeMin) {
             if (power > 0) {
                 hinge.setPower(power);
             } else {
@@ -412,29 +413,29 @@ public class VirusMethods extends VirusHardware {
 
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up) {
-//        showTelemetry("moving intake pivot to up: " + up);
-//        double originalHinge = hingeAngle();
-//        if (originalHinge < 10){
-//            hinge(10);
-//            telemetry.addData("Hinge","Moving Up");
-//        }
-//        int originalSlide = slideLeft.getCurrentPosition();
-//        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
-//            slides(-50);
-//        }
-////        if (up){
-////            pivot1.setPosition(.5);
-////            pivot2.setPosition(.5);
-////        } else {
-////            pivot1.setPosition(0);
-////            pivot2.setPosition(1);
-////        }
-//        if (originalHinge < 10){
-//            hinge(originalHinge);
-//        }
-//        if (originalSlide > -50) {
-//            slides(originalSlide);
-//        }
+        showTelemetry("moving intake pivot to up: " + up);
+        double originalHinge = hingeAngle();
+        if (originalHinge < 10){
+            hinge(10);
+            telemetry.addData("Hinge","Moving Up");
+        }
+        int originalSlide = slideLeft.getCurrentPosition();
+        if (slideLeft.getCurrentPosition()>-50 || slideRight.getCurrentPosition()>-50){
+            slides(-50);
+        }
+        if (up){
+            pivot1.setPosition(.5);
+            pivot2.setPosition(.5);
+        } else {
+            pivot1.setPosition(0);
+            pivot2.setPosition(1);
+        }
+        if (originalHinge < 10){
+            hinge(originalHinge);
+        }
+        if (originalSlide > -50) {
+            slides(originalSlide);
+        }
     }
 
     //drop marker
@@ -454,38 +455,38 @@ public class VirusMethods extends VirusHardware {
     public void dehang() {
         showTelemetry("dehanging");
         //get on ground
-//        hinge(90);
-//        slides(3500);
-//        //move forward and retract slides
-//        move(3,0.3f);
-//        slides(0);
+        hinge(90);
+        slides(3500);
+        //move forward and retract slides
+        move(3,0.3f);
+        slides(0);
     }
 
     public void intoCrater() {
-        //sweeperVex.setPower(-1);
-//        outrigger.setPosition(0);
+        sweeperVex.setPower(-1);
+        outrigger.setPosition(0);
         showTelemetry("going into crater");
         if (intakeState == intakeState.retracted) {
-            //hinge(45);
+            hinge(30);
             intakePivot(true);
         }
         if (intakeState == intakeState.lander) {
-            //slides(0);
-            //hinge(45);
+            slides(0);
+            hinge(30);
         }
-        //slides(3000);
+        slides(3000);
         intakePivot(false);
-        //hinge(0);
+        hinge(0);
 
         intakeState = intakeState.crater;
     }
 
     public void retract() {
         showTelemetry("retracting slides");
-//        outrigger.setPosition(0);
-        //sweeper.setPower(0);
+        outrigger.setPosition(0);
+        sweeperVex.setPower(0);
         if (intakeState == intakeState.crater) {
-            hinge(45);
+            hinge(30);
             intakePivot(true);
         }
         slides(0);
@@ -497,20 +498,20 @@ public class VirusMethods extends VirusHardware {
     public void score() {
         showTelemetry("scoring");
         if (intakeState == intakeState.crater) {
-            hinge(45);
+            hinge(30);
             slides(0);
         }
-//        outrigger.setPosition(1);
+        outrigger.setPosition(1);
         hinge(90);
         intakePivot(true);
         slides(3500);
-        //sweeper.setPower(0.4);
+        sweeperVex.setPower(0.4);
         intakeState = intakeState.lander;
     }
 
     public void standby() {
         showTelemetry("going into standby");
-        hinge(45);
+        hinge(30);
         slides(0);
         intakeState = intakeState.standby;
     }

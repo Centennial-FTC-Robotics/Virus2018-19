@@ -41,6 +41,7 @@ public class Drive extends VirusMethods {
             }
             //hinge follows joystick
             hingePower(-1.0 * gamepad2.right_stick_y);
+
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
@@ -66,47 +67,55 @@ public class Drive extends VirusMethods {
                 showTelemetry("scoring (button x)");
                 score();
             }
-//            //claw down
-//            if(gamepad2.dpad_down){
-//                intakePivot(false);
-//            }
-//            //claw up
-//            if(gamepad2.dpad_up){
-//                intakePivot(true);
-//            }
-//            //enable slide lock
-//            if(gamepad2.right_trigger > 0){
-//                slideLock.setPosition(0.5);
-//            }
-//            //disable slide lock
-//            if(gamepad2.left_trigger > 0){
-//                slideLock.setPosition(0);
-//            }
+            //claw down
+            if(gamepad2.dpad_down){
+                intakePivot(false);
+            }
+            //claw up
+            if(gamepad2.dpad_up){
+                intakePivot(true);
+            }
+            //enable outrigger
+            if(gamepad2.right_trigger > 0){
+                outrigger.setPosition(1);
+            }
+            //disable outrigger
+            if(gamepad2.left_trigger > 0){
+                outrigger.setPosition(0);
+            }
             //sweepers
             if(gamepad2.right_bumper){
                 //sweep in
-                //sweeperVex.setPower(-0.5);
+                sweeperVex.setPower(-0.5);
                 updateIntakes();
             }else if(gamepad2.left_bumper){
                 //sweep out
-                //sweeperVex.setPower(0.3);
+                sweeperVex.setPower(0.3);
                 updateIntakes();
             } else{
                 //idle, sweep in slowly
-                //sweeperVex.setPower(0);
+                sweeperVex.setPower(0);
                 //update intake every 3 seconds
                 if (time.time() % 3 == 0){
                     updateIntakes();
                 }
             }
 //            //ball mode
-//            if(gamepad2.dpad_right){
-//                sifter.setPosition(1);
-//            }
+            if(gamepad2.dpad_right){
+                sifter.setPosition(1);
+            }
 //            //cube mode
-//            if(gamepad2.dpad_left){
-//                sifter.setPosition(0);
-//            }
+            if(gamepad2.dpad_left){
+                sifter.setPosition(0);
+            }
+
+            //endgame mode
+            if (gamepad1.x && gamepad1.y){
+                hingeMin = (int) (-20 * (3700 / 90));
+            }
+            if (gamepad1.a && gamepad1.b){
+                hingeMin = 0;
+            }
             if(intakeState == intakeState.crater){
                 if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
                     double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
