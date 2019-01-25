@@ -62,7 +62,7 @@ public class VirusMethods extends VirusHardware {
     intake slot1;
     intake slot2;
     intake[] intakeSlots = {slot1, slot2};
-    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
+//    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
     // simple conversion
     private static final float mmPerInch = 25.4f;
 
@@ -271,28 +271,28 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void updateIntakes() {
-        showTelemetry("updating intakes");
-        int red1 = colorSensor1.red();
-        int blue1 = colorSensor1.blue();
-        int green1 = colorSensor1.green();
-        int red2 = colorSensor1.red();
-        int blue2 = colorSensor1.blue();
-        int green2 = colorSensor1.green();
-
-        if (percentDiff(red1, blue1) > 70) {
-            slot1 = intake.Cube;
-        } else if ((red1 + green1 + blue1) / 3 > 30) {
-            slot1 = intake.Ball;
-        } else {
-            slot1 = intake.None;
-        }
-        if (percentDiff(red2, blue2) > 70) {
-            slot2 = intake.Cube;
-        } else if ((red2 + green2 + blue2) / 3 > 30) {
-            slot2 = intake.Ball;
-        } else {
-            slot2 = intake.None;
-        }
+//        showTelemetry("updating intakes");
+//        int red1 = colorSensor1.red();
+//        int blue1 = colorSensor1.blue();
+//        int green1 = colorSensor1.green();
+//        int red2 = colorSensor1.red();
+//        int blue2 = colorSensor1.blue();
+//        int green2 = colorSensor1.green();
+//
+//        if (percentDiff(red1, blue1) > 70) {
+//            slot1 = intake.Cube;
+//        } else if ((red1 + green1 + blue1) / 3 > 30) {
+//            slot1 = intake.Ball;
+//        } else {
+//            slot1 = intake.None;
+//        }
+//        if (percentDiff(red2, blue2) > 70) {
+//            slot2 = intake.Cube;
+//        } else if ((red2 + green2 + blue2) / 3 > 30) {
+//            slot2 = intake.Ball;
+//        } else {
+//            slot2 = intake.None;
+//        }
     }
     /* -------------- Movement -------------- */
 
