@@ -13,7 +13,7 @@ public class Drive extends VirusMethods {
     float factor;
     ElapsedTime time = new ElapsedTime();
     private String action ="";
-    public static boolean needTelemetry = true;
+    public static boolean needTelemetry = false;
     public static int slidePos = 0;
 
 
@@ -26,6 +26,7 @@ public class Drive extends VirusMethods {
         showTelemetry("resetting time");
         time.reset();
         showTelemetry("waiting for start");
+        sifter.setPosition(0);
         waitForStart();
         while (opModeIsActive()) {
             showTelemetry("opmode is active");
@@ -40,46 +41,48 @@ public class Drive extends VirusMethods {
                 slidePower(-gamepad2.left_stick_y);
             }
             //hinge follows joystick
-            hingePower(-1.0 * gamepad2.right_stick_y);
+//            boolean usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
+//            boolean usingPivot = (gamepad2.dpad_down) || (gamepad2.dpad_up);
+            hingePower(-1.0 * gamepad2.right_stick_y, false);
 
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
-            if(gamepad2.a){
-                showTelemetry("retracting slides )button a)");
-                retract();
-            }
-            if(gamepad2.start && gamepad2.b){
-                while(gamepad2.start || gamepad2.b){
-                    showTelemetry("waiting while initializing");
-                    //do nothing
-                }
-            }
-            if(gamepad2.b && !gamepad2.start){
-                showTelemetry("going into standby (button b)");
-                standby();
-            }
-            if(gamepad2.y){
-                showTelemetry("going into crater (button y)");
-                intoCrater();
-            }
-            if(gamepad2.x){
-                showTelemetry("scoring (button x)");
-                score();
-            }
+//            if(gamepad2.a){
+//                showTelemetry("retracting slides )button a)");
+//                retract();
+//            }
+//            if(gamepad2.start && gamepad2.b){
+//                while(gamepad2.start || gamepad2.b){
+//                    showTelemetry("waiting while initializing");
+//                    //do nothing
+//                }
+//            }
+//            if(gamepad2.b && !gamepad2.start){
+//                showTelemetry("going into standby (button b)");
+//                standby();
+//            }
+//            if(gamepad2.y){
+//                showTelemetry("going into crater (button y)");
+//                intoCrater();
+//            }
+//            if(gamepad2.x){
+//                showTelemetry("scoring (button x)");
+//                score();
+//            }
             //claw down
             if(gamepad2.dpad_down){
-                intakePivot(false);
+                intakePivot(false, true);
             }
             //claw up
             if(gamepad2.dpad_up){
-                intakePivot(true);
+                intakePivot(true, true);
             }
-            //enable outrigger
+            //enable usingOutrigger
             if(gamepad2.right_trigger > 0){
                 outrigger.setPosition(1);
             }
-            //disable outrigger
+            //disable usingOutrigger
             if(gamepad2.left_trigger > 0){
                 outrigger.setPosition(0);
             }
@@ -90,12 +93,13 @@ public class Drive extends VirusMethods {
                 updateIntakes();
             }else if(gamepad2.left_bumper){
                 //sweep out
-                sweeperVex.setPower(0.3);
+                sweeperVex.setPower(0.5);
                 updateIntakes();
             } else{
                 //idle, sweep in slowly
-                sweeperVex.setPower(0);
+                //sweeperVex.setPower(-0.3);
                 //update intake every 3 seconds
+                sweeperVex.setPower(0);
                 if (time.time() % 3 == 0){
                     updateIntakes();
                 }
@@ -116,7 +120,7 @@ public class Drive extends VirusMethods {
             if (gamepad1.a && gamepad1.b){
                 hingeMin = 0;
             }
-            if(intakeState == intakeState.crater){
+            if((intakeState == intakeState.crater) || (slideLeft.getCurrentPosition()> 1000 && hingeAngle()<45)){
                 if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
                     double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
                     runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));

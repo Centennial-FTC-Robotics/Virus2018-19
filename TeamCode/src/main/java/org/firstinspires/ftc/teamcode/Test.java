@@ -70,51 +70,51 @@ public class Test extends VirusMethods {
         if(haveslides) {
             //extend slides to max
             showTelemetry("extending slide to max");
-            slides(slideMax);
+            slides(slideMax, false);
             waitTime(500);
 
             //retract slides
             showTelemetry("retracting slides");
-            slides(0);
+            slides(0, false);
             waitTime(500);
         }
         if(havehinge) {
             //hinge all the way up
             showTelemetry("raising hinge to 90 degrees");
-            hinge(90);
+            hinge(90, false);
             waitTime(500);
         }
         if(haveslides) {
             //hinge to height of lander
             showTelemetry("extending slides to lander");
-            slides(-3500);
+            slides(-3500, false);
             waitTime(500);
 
             //retract slides for next tests
             showTelemetry("retracting slides");
-            slides(0);
+            slides(0, false);
             waitTime(500);
         }
         if(havehinge) {
             //hinge all the way down
             showTelemetry("lowering hinge to 0 degrees");
-            hinge(0);
+            hinge(0, false);
             waitTime(500);
 
             //hinge slightly up for next tests
             showTelemetry("raising hinge to 30 degrees");
-            hinge(30);
+            hinge(30, false);
             waitTime(500);
         }
         if(haveintake) {
             //claw up
             showTelemetry("raising intake");
-            intakePivot(true);
+            intakePivot(true, false);
             waitTime(500);
 
             //claw down
             showTelemetry("lowering intake");
-            intakePivot(false);
+            intakePivot(false, false);
             waitTime(500);
         }
         if(havesweeprs) {
