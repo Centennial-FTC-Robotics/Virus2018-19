@@ -19,14 +19,15 @@ public class EmergencyDepotAuto extends VirusMethods {
 //            hinge(0, false);
 //            slides(0, false);
 //        }
+        initializeIMU();
         waitForStart();
-
-        double turnSpeed = 0.3;
+        double turnSpeed = 0.5;
         ElapsedTime timer = new ElapsedTime();
         //dehang();
+        move(5, .5f);
         turnAbsolute(45, turnSpeed);
         move(40, (float) 0.5);
         turnRelative(90, 0.5f);
-        move(15,0.5f);
+        move(30,0.5f);
     }
 }

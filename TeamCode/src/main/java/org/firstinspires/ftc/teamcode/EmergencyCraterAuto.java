@@ -19,14 +19,13 @@ public class EmergencyCraterAuto extends VirusMethods {
 //            hinge(0, false);
 //            slides(0, false);
 //        }
+        initializeIMU();
         waitForStart();
-
-        double turnSpeed = 0.3;
+        double turnSpeed = 0.5;
         ElapsedTime timer = new ElapsedTime();
 //        dehang();
-        turnAbsolute(45, turnSpeed);
-        move(40, (float) 0.5);
-        turnRelative(-90, turnSpeed);
-        move(9,0.5f);
+        runDriveMotors(-0.7f,-0.7f);
+        waitTime(1500);
+        runDriveMotors(0,0);
     }
 }
