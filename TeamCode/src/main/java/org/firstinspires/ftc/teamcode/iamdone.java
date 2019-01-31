@@ -14,14 +14,11 @@ public class iamdone extends VirusMethods{
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        slides(1000);
+        hinge(45);
         initializeIMU();
         initVision();
-        while (!isStarted()) {
-            intakePivot(true, false);
-            hinge(0, false);
-            slides(0, false);
-        }
         waitForStart();
-
+        slides(0);
     }
 }

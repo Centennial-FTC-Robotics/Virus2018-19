@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="DepotAuto", group="Autonomous")
+@Autonomous(name = "DepotAuto", group = "Autonomous")
 public class DepotAuto extends VirusMethods {
 
     private String action = "";
@@ -13,99 +13,92 @@ public class DepotAuto extends VirusMethods {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        slides(0);
+        hinge(0);
+        intakePivot(true);
         initVision();
-//        telemetry.addData("task", "before while");
-//        while(!isStarted()) {
-//            intakePivot(false, false);
-//            hinge(0, false);
-//            slides(0, false);
-//        }
-//        telemetry.addData("task", "after while");
-//        slideLock.setPosition(0.5);
         initializeIMU();
         waitForStart();
 
-        ElapsedTime timer = new ElapsedTime();
-//        showTelemetry("initializing");
-
-        //int scanAngle = 12; //positive angle is left turn
+        int scanAngle = 12; //positive angle is left turn
         int knockAngle = 30;
-        double turnSpeed = 0.5;
-        //float moveSpeed = 0.4f;
-        String goldPos = "bad";
+        double turnSpeed = 0.6;
+        float moveSpeed = 0.6f;
+        String goldPos = "";
 //        showTelemetry("dehanging");
-//        dehang();
-//        showTelemetry("initializing imu");
-        move(5, .5f);
-        slides(100, false);
-        hinge(90, false);
-//        showTelemetry("turning left 10 degrees");
-        turnRelative(10,0.5);
+        dehang();
+        move(5, moveSpeed);
+        slides(100);
+        hinge(90);
+        //showTelemetry("turning left 10 degrees");
+        turnRelative(13, turnSpeed);
 
         //figure out gold position
-//        showTelemetry("finding gold");
+        //showTelemetry("finding gold");
+        ElapsedTime timer = new ElapsedTime();
+        telemetry.addData("Timer", timer.seconds());
         timer.reset();
-        while (opModeIsActive() && timer.seconds() < 5 && goldPos.equals("bad")) {
-            telemetry.addData("Timer" , timer.seconds());
+        while (opModeIsActive() && timer.seconds() < 3 && goldPos.equals("")) {
+            telemetry.addData("Timer", timer.seconds());
             goldPos = autoFindGold();
-            telemetry.addData("Gold Position" , goldPos);
+            telemetry.addData("Gold Position", goldPos);
             telemetry.update();
         }
         closeTfod();
-//        showTelemetry("raising hinge to 0 degrees, finding gold");
-        intakePivot(true, false);
-        slides(500, false);
-        hinge(0, false);
+        //showTelemetry("raising hinge to 0 degrees, finding gold");
+        intakePivot(true);
+        slides(500);
+        hinge(0);
         //turn and move to hit (if no detect just move on)
         //extends slides 2.45 ft to hit mineral
-        if (!goldPos.equals("bad")){
-            action = "found gold: " +goldPos;
-            telemetry.update();
+        int sideDist = 24;
+        int centerDist = 20;
+        if (!goldPos.equals("")) {
+            //showTelemetry("found gold: " + goldPos);
+            telemetry.addData("Turning to", goldPos);
             if (goldPos.equals("Left")) {
-//                showTelemetry("turning absolute left " + knockAngle +" degrees");
-                //telemetry.update();
+                //showTelemetry("turning absolute left " + knockAngle +" degrees");
+                telemetry.update();
                 turnAbsolute(knockAngle, turnSpeed);
-                intakePivot(false, false);
-                move(24, 0.5f);
-                waitTime(500);
-                move(-24, 0.5f);
-            }
-            else if (goldPos.equals("Center")) {
-//                showTelemetry("turning absolute 0 degrees");
+                intakePivot(false);
+                move(sideDist, moveSpeed);
+                move(-sideDist, moveSpeed);
+            } else if (goldPos.equals("Center")) {
+                //showTelemetry("turning absolute 0 degrees");
                 turnAbsolute(0, turnSpeed);
-                intakePivot(false, false);
-                move(18, 0.5f);
-                waitTime(500);
-                move(-18, 0.5f);
-            }
-            else if (goldPos.equals("Right")) {
-//                showTelemetry("turning absolute right " + knockAngle +" degrees");
+                intakePivot(false);
+                move(centerDist, moveSpeed);
+                move(-centerDist, moveSpeed);
+            } else if (goldPos.equals("Right")) {
+                //showTelemetry("turning absolute right " + knockAngle +" degrees");
                 turnAbsolute(-knockAngle, turnSpeed);
-                intakePivot(false, false);
-                move(24, 0.5f);
-                waitTime(500);
-                move(-24, 0.5f);
+                intakePivot(false);
+                move(sideDist, moveSpeed);
+                move(-sideDist, moveSpeed);
             }
-            //showTelemetry("extending slide to knock gold");
-            //slides(5960, false);
+//            showTelemetry("extending slide to knock gold");
+//            slides(5960, false);
+//            waitTime(500);
 //            showTelemetry("retracting slides");
-            //slides(0, false);
-
-
+//            slides(0, false);
         }
-        if(goldPos.equals("bad") || goldPos.equals("")) {
-            intakePivot(false, false);
-            move(24, .5f);
-            move(-24, 5.f);
+        //deafult, ram the right mineral
+        if (goldPos.equals("")) {
+            telemetry.addData("Did not find gold", "nicht gut");
+            turnAbsolute(-knockAngle, turnSpeed);
+            intakePivot(false);
+            move(sideDist, moveSpeed);
+            move(-sideDist, moveSpeed);
         }
-            turnAbsolute(0, turnSpeed);
-            move(-4, 0.5f);
-            //go to wall
-            intakePivot(false, false);
-//        showTelemetry("turning absolute left 45 degrees");
-            turnAbsolute(45, turnSpeed);
-//        showTelemetry("going forward 40 inches");
-            move(45, (float) 0.5);
+        //realign self
+        turnAbsolute(0, turnSpeed);
+        move(-5, moveSpeed);
+        //go to wall (REPLACE WITH PROX SENSOR CODE)
+        intakePivot(false);
+        //showTelemetry("turning absolute left 45 degrees");
+        turnAbsolute(45, turnSpeed);
+        //showTelemetry("going forward 40 inches");
+        move(48, moveSpeed);
 
 //        //turn to depot, drop marker, turn to crater(prox sensor too)
 //        showTelemetry("turning relative right 90 degrees");
@@ -129,9 +122,9 @@ public class DepotAuto extends VirusMethods {
 //        showTelemetry("finish autonomous");
 //        telemetry.update();
 
-            //go straight to crater
-            turnRelative(90, turnSpeed);
-            move(30, 0.5f);
+        //go straight to crater
+        turnRelative(90, turnSpeed);
+        move(30, moveSpeed);
 
     }
 //    private void showTelemetry(String action){

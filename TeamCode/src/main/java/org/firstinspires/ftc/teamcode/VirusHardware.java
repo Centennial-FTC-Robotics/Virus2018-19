@@ -102,6 +102,6 @@ public abstract class VirusHardware extends LinearOpMode {
         initialPitch = orientation.secondAngle;
         initialRoll = orientation.thirdAngle;
 
-        waitForStart();
+
     }
 }

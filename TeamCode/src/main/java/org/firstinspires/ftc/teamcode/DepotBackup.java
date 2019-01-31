@@ -16,7 +16,7 @@ public class DepotBackup extends VirusMethods {
         runDriveMotors(0.7f,-0.7f);
         waitTime(250);
         runDriveMotors(-0.7f,-0.7f);
-        intakePivot(true, false);
+        intakePivot(true);
         waitTime(1000);
         runDriveMotors(0,0);
     }

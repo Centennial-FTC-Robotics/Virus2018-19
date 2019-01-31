@@ -95,13 +95,17 @@ public class VirusMethods extends VirusHardware {
         }
         super.runOpMode();
         intakePivotUp = (pivot1.getPosition() != 0);
+        telemetry.addData("Point", 1);
+        telemetry.update();
         showTelemetry("init drive motors");
         driveMotors[0] = lmotor0;
         driveMotors[1] = lmotor1;
         driveMotors[2] = rmotor0;
         driveMotors[3] = rmotor1;
+        telemetry.addData("Point", 2);
+        telemetry.update();
         showTelemetry("init imu");
-        initializeIMU();
+        //initializeIMU();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
@@ -110,10 +114,14 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.retracted;
         //all servo starting positions go here
 //        marker.setPosition(0);
-        intakePivot(false, false);
+        telemetry.addData("Point", 3);
+        telemetry.update();
+        intakePivot(false);
 //        sifter.setPosition(0); //ball mode
         outrigger.setPosition(0);
         //need to run initVuforia and initTfod
+        telemetry.addData("Point", 4);
+        telemetry.update();
     }
 
     /* -------------- Initialization -------------- */
@@ -309,7 +317,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     //sets slide to certain position
-    public void slides(int position, boolean teleOp) {
+    public void slides(int position) {
         showTelemetry("moving slides");
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -320,9 +328,8 @@ public class VirusMethods extends VirusHardware {
         slideRight.setTargetPosition(position);
         slideLeft.setPower(0.7);
         slideRight.setPower(0.7);
-        if(teleOp) {
-            while (slideLeft.isBusy() || slideRight.isBusy()) ;
-        }
+        while (slideLeft.isBusy() || slideRight.isBusy()) ;
+
     }
 
     //sets slide to specified INCH position
@@ -387,7 +394,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     //set hinge position
-    public void hinge(double angle, boolean teleOp) {
+    public void hinge(double angle) {
 //        slideLock.setPosition(0);
         showTelemetry("moving hinge to ");
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -398,9 +405,7 @@ public class VirusMethods extends VirusHardware {
         }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
-        if(teleOp) {
             while (hinge.isBusy()) ;
-        }
         outrigger.setPosition(0);
     }
 
@@ -439,7 +444,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     //if true, intake pivots up, if false, then pivots down
-    public void intakePivot(boolean up, boolean teleOp) {
+    public void intakePivot(boolean up) {
         showTelemetry("moving intake pivot to up: " + up);
         lmotor0.setPower(0);
         lmotor1.setPower(0);
@@ -448,7 +453,7 @@ public class VirusMethods extends VirusHardware {
         if (intakePivotUp != up) {
             double originalHinge = hingeAngle();
             if (originalHinge < 10) {
-                hinge(10, teleOp);
+                hinge(10);
                 telemetry.addData("Hinge", "Moving Up");
             }
             if (up) {
@@ -461,7 +466,7 @@ public class VirusMethods extends VirusHardware {
                 intakePivotUp = false;
             }
             if (originalHinge < 10) {
-                hinge(originalHinge, teleOp);
+                hinge(originalHinge);
             }
         }
     }
@@ -483,11 +488,12 @@ public class VirusMethods extends VirusHardware {
     public void dehang() {
         showTelemetry("dehanging");
         //get on ground
-        hinge(90, false);
-        slides(3500, false);
+        slides(500);
+        hinge(90);
+        slides(3500);
         //move forward and retract slides
         move(3,0.3f);
-        slides(0, false);
+        slides(0);
     }
 
     public void intoCrater() {
@@ -495,16 +501,16 @@ public class VirusMethods extends VirusHardware {
         outrigger.setPosition(0);
         showTelemetry("going into crater");
         if (intakeState == intakeState.retracted) {
-            hinge(30, true);
-            intakePivot(true, true);
+            hinge(30);
+            intakePivot(true);
         }
         if (intakeState == intakeState.lander) {
-            slides(0, true);
-            hinge(30, true);
+            slides(0);
+            hinge(30);
         }
-        slides(3000, true);
-        intakePivot(false, true);
-        hinge(0, true);
+        slides(3000);
+        intakePivot(false);
+        hinge(0);
 
         intakeState = intakeState.crater;
     }
@@ -514,33 +520,33 @@ public class VirusMethods extends VirusHardware {
         outrigger.setPosition(0);
         sweeperVex.setPower(0);
         if (intakeState == intakeState.crater) {
-            hinge(30, true);
-            intakePivot(true, true);
+            hinge(30);
+            intakePivot(true);
         }
-        slides(0, true);
-        intakePivot(false, true);
-        hinge(0, true);
+        slides(0);
+        intakePivot(false);
+        hinge(0);
         intakeState = intakeState.retracted;
     }
 
     public void score() {
         showTelemetry("scoring");
         if (intakeState == intakeState.crater) {
-            hinge(30, true);
-            slides(0, true);
+            hinge(30);
+            slides(0);
         }
         outrigger.setPosition(1);
-        hinge(90, true);
-        intakePivot(true, true);
-        slides(3500, true);
+        hinge(90);
+        intakePivot(true);
+        slides(3500);
         sweeperVex.setPower(0.4);
         intakeState = intakeState.lander;
     }
 
     public void standby() {
         showTelemetry("going into standby");
-        hinge(30, true);
-        slides(0, true);
+        hinge(30);
+        slides(0);
         intakeState = intakeState.standby;
     }
 
@@ -624,7 +630,7 @@ public class VirusMethods extends VirusHardware {
             direction = getAngleDir(targetAngle, currentAngle);
             double turnRate = (angleDifference * speed) / 90;
 
-            while (opModeIsActive() && angleDifference > 1) {
+            while (opModeIsActive() && angleDifference > 5) {
                 runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
                 angleDifference = getAngleDist(targetAngle, getRotationinDimension('Z'));
                 direction = getAngleDir(targetAngle, getRotationinDimension(('Z')));
