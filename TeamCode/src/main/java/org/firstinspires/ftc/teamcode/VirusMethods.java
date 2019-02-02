@@ -413,12 +413,9 @@ public class VirusMethods extends VirusHardware {
         }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
-//        while (Math.abs(hinge.getCurrentPosition()-angle) > 3){
-//            telemetry.addData("Angle Diff",Math.abs(hinge.getCurrentPosition()-angle));
-//            telemetry.update();
-//        }
-//        hinge.setPower(0);
-        while (hinge.isBusy());
+        while (Math.abs(hinge.getCurrentPosition()-position) > 50);
+        hinge.setPower(0);
+//        while (hinge.isBusy());
         outrigger.setPosition(0);
     }
     public boolean hingeSimul(double angle){
@@ -432,8 +429,8 @@ public class VirusMethods extends VirusHardware {
         hinge.setTargetPosition(position);
         hinge.setPower(1);
 
-        double angleDifference = Math.abs(hinge.getCurrentPosition()-angle);
-        if (angleDifference < 3) {
+        double posDifference = Math.abs(hinge.getCurrentPosition()-position);
+        if (posDifference < 50) {
             hinge.setPower(0);
             outrigger.setPosition(0);
             return true;
