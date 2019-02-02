@@ -91,10 +91,13 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() == 2) {
+                        if (updatedRecognitions.size() > 0) {
                             int goldMineralX = -1;
+                            int goldMineralY = -1;
                             int silverMineral1X = -1;
+                            int silverMineral1Y = -1;
                             int silverMineral2X = -1;
+                            int silverMineral2Y = -1;
 //                            ArrayList<Float> heights = new ArrayList<Float>();
 //                            ArrayList<Float> widths = new ArrayList<Float>();
 //                            //exclude detected object that are too big
@@ -114,10 +117,13 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                                     goldMineralX = (int) recognition.getLeft();
+                                    goldMineralY = (int) recognition.getTop();
                                 } else if (silverMineral1X == -1) {
                                     silverMineral1X = (int) recognition.getLeft();
+                                    silverMineral1Y = (int) recognition.getTop();
                                 } else {
                                     silverMineral2X = (int) recognition.getLeft();
+                                    silverMineral2Y = (int)recognition.getTop();
                                 }
 //                                heights.add(recognition.getHeight());
 //                                widths.add(recognition.getWidth());
@@ -127,19 +133,27 @@ public class TensorFlowObjectDetection extends LinearOpMode {
 //                                telemetry.addData("Width "+i, widths.get(i));
 //                            }
                             telemetry.addData("G Mineral Position X", goldMineralX);
+                            telemetry.addData("G Mineral Position Y", goldMineralY);
                             telemetry.addData("S1 Mineral Position X", silverMineral1X);
+                            telemetry.addData("S1 Mineral Position Y", silverMineral1Y);
                             telemetry.addData("S2 Mineral Position X", silverMineral2X);
+                            telemetry.addData("S2 Mineral Position Y", silverMineral2Y);
 
                             //determines position of gold mineral
+                            boolean gold = false;
                             String goldPosition = "";
-                            if (goldMineralX==-1){
-                                goldPosition = "Right";
-                            }else if(goldMineralX > silverMineral1X){
-                                goldPosition = "Center";
-                            }else if(goldMineralX < silverMineral1X){
-                                goldPosition = "Left";
+//                            if (goldMineralX==-1){
+//                                goldPosition = "Right";
+//                            }else if(goldMineralX > silverMineral1X){
+//                                goldPosition = "Center";
+//                            }else if(goldMineralX < silverMineral1X){
+//                                goldPosition = "Left";
+//                            }
+//                            telemetry.addData("Gold Position", goldPosition);
+                            if (goldMineralX > 625 && goldMineralX < 825){
+                                gold = true;
                             }
-                            telemetry.addData("Gold Position", goldPosition);
+                            telemetry.addData("Gold?",gold);
                         }
                         telemetry.update();
                     }

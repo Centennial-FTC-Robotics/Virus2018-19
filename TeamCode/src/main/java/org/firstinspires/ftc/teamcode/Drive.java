@@ -12,28 +12,26 @@ public class Drive extends VirusMethods {
     float rightSpeed;
     float factor;
     ElapsedTime time = new ElapsedTime();
-    private String action ="";
+    private String action = "";
     public static boolean needTelemetry = false;
 
 
     public void runOpMode() throws InterruptedException {
-        if(needTelemetry){
+        if (needTelemetry) {
             action = "starting drive opmode";
             telemetry.addData("task", action);
         }
         super.runOpMode();
-        showTelemetry("resetting time");
         time.reset();
-        showTelemetry("waiting for start");
         sifter.setPosition(0);
         waitForStart();
+
         while (opModeIsActive()) {
-            showTelemetry("opmode is active");
             //drive system
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y - Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x, -1, 1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y + Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x, -1, 1);
             factor = (float) (0.7 + 0.3 * gamepad1.right_trigger - 0.5 * gamepad1.left_trigger);
-            if(!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x !=0)) {
+            if (!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x != 0)) {
                 runDriveMotors(factor * leftSpeed, factor * rightSpeed);
             }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
@@ -48,81 +46,81 @@ public class Drive extends VirusMethods {
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
-            if(gamepad2.a){
-                showTelemetry("retracting slides )button a)");
-                retractSimul();
-            }
-            if(gamepad2.start && gamepad2.b){
-                while(gamepad2.start || gamepad2.b){
-                    showTelemetry("waiting while initializing");
-                    //do nothing
-                }
-            }
-            if(gamepad2.b && !gamepad2.start){
-                showTelemetry("going into standby (button b)");
-                standbySimul();
-            }
-            if(gamepad2.y){
-                showTelemetry("going into crater (button y)");
-                intoCraterSimul();
-            }
-            if(gamepad2.x){
-                showTelemetry("scoring (button x)");
-                scoreSimul();
-            }
+//            if(gamepad2.a){
+//                showTelemetry("retracting slides )button a)");
+//                retractSimul();
+//            }
+//            if(gamepad2.start && gamepad2.b){
+//                while(gamepad2.start || gamepad2.b){
+//                    showTelemetry("waiting while initializing");
+//                    //do nothing
+//                }
+//            }
+//            if(gamepad2.b && !gamepad2.start){
+//                showTelemetry("going into standby (button b)");
+//                standbySimul();
+//            }
+//            if(gamepad2.y){
+//                showTelemetry("going into crater (button y)");
+//                intoCraterSimul();
+//            }
+//            if(gamepad2.x){
+//                showTelemetry("scoring (button x)");
+//                scoreSimul();
+//            }
             //claw down
-            if(gamepad2.dpad_down){
+            if (gamepad2.dpad_down) {
                 intakePivot(false);
             }
             //claw up
-            if(gamepad2.dpad_up){
+            if (gamepad2.dpad_up) {
                 intakePivot(true);
             }
             //enable usingOutrigger
-            if(gamepad2.right_trigger > 0){
+            if (gamepad2.right_trigger > 0) {
                 outrigger.setPosition(1);
             }
             //disable usingOutrigger
-            if(gamepad2.left_trigger > 0){
+            if (gamepad2.left_trigger > 0) {
                 outrigger.setPosition(0);
             }
             //sweepers
-            if(gamepad2.right_bumper){
+            if (gamepad2.right_bumper) {
                 //sweep in
                 sweeperVex.setPower(-0.5);
                 updateIntakes();
-            }else if(gamepad2.left_bumper){
+            } else if (gamepad2.left_bumper) {
                 //sweep out
                 sweeperVex.setPower(0.5);
                 updateIntakes();
-            } else{
+            } else {
                 //idle, sweep in slowly
                 //sweeperVex.setPower(-0.3);
                 //update intake every 3 seconds
                 sweeperVex.setPower(0);
-                if (time.time() % 3 == 0){
+                if (time.time() % 3 == 0) {
                     updateIntakes();
                 }
             }
 //            //ball mode
-            if(gamepad2.dpad_right){
+            if (gamepad2.dpad_right) {
                 sifter.setPosition(1);
             }
 //            //cube mode
-            if(gamepad2.dpad_left){
+            if (gamepad2.dpad_left) {
                 sifter.setPosition(0);
             }
 
             //endgame mode
-            if (gamepad1.x && gamepad1.y){
+            if (gamepad1.x && gamepad1.y) {
                 hingeMin = (int) (-20 * (3700 / 90));
             }
-            if (gamepad1.a && gamepad1.b){
+            if (gamepad1.a && gamepad1.b) {
                 hingeMin = 0;
             }
-            if((intakeState == intakeState.crater) || (slideLeft.getCurrentPosition()> 1000 && hingeAngle()<45)){
-                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0){
-                    double turnFactor = 0.3 - 0.207*(slideLeft.getCurrentPosition()/7300);
+            if ((intakeState == intakeState.crater) || (slideLeft.getCurrentPosition() > 1000 && hingeAngle() < 45)) {
+                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+                    double turnFactor = 0.3 - 0.207 * (slideLeft.getCurrentPosition() / 7300);
                     runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));
                 }
             }
@@ -134,7 +132,7 @@ public class Drive extends VirusMethods {
             telemetry.addData("Intake state", intakeState);
 //            telemetry.addData("Left Slide Encoder", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right Slide Encoder", slideRight.getCurrentPosition());
-            telemetry.addData("Heading",getRotationinDimension(('Z')));
+            telemetry.addData("Heading", getRotationinDimension(('Z')));
 //            telemetry.addData("Slide Left", slideLeft.getCurrentPosition());
 //            telemetry.addData("Slide Right", slideRight.getCurrentPosition());
 //            telemetry.addData("Gamepad 2 Right Joystick y", gamepad2.right_stick_y);
@@ -147,11 +145,7 @@ public class Drive extends VirusMethods {
             idle();
 
         }
-    }
 
-    private void showTelemetry(String action){
-            this.action = action;
-            telemetry.update();
     }
 
 }

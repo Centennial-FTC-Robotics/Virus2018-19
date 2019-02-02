@@ -24,73 +24,62 @@ public class CraterAuto extends VirusMethods {
         int knockAngle = 30;
         double turnSpeed = 0.6;
         float moveSpeed = 0.6f;
-        String goldPos = "";
-//        showTelemetry("dehanging");
+        boolean haveGold = false;
+        int sideDist = 24;
+        int centerDist = 20;
+        double lookTime = 1.5;
+
         dehang();
         initializeIMU();
         move(5, moveSpeed);
-        slides(100);
-        hinge(90);
-        //showTelemetry("turning left 10 degrees");
-        turnRelative(13, turnSpeed);
-
+//        //showTelemetry("turning left 10 degrees");
+//        turnRelative(13, turnSpeed);
+        slides(0);
+        intakePivot(true);
         //figure out gold position
-        //showTelemetry("finding gold");
+        //look at left mineral
+        turnAbsolute(knockAngle, turnSpeed);
         ElapsedTime timer = new ElapsedTime();
         telemetry.addData("Timer", timer.seconds());
         timer.reset();
-        while (opModeIsActive() && timer.seconds() < 3 && goldPos.equals("")) {
+        while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
             telemetry.addData("Timer", timer.seconds());
-            goldPos = autoFindGold();
-            telemetry.addData("Gold Position", goldPos);
+            haveGold = isGold();
+            telemetry.addData("Gold?", haveGold);
             telemetry.update();
         }
-        closeTfod();
-        //showTelemetry("raising hinge to 0 degrees, finding gold");
-        intakePivot(true);
-        slides(500);
-        hinge(0);
-        //turn and move to hit (if no detect just move on)
-        //extends slides 2.45 ft to hit mineral
-        int sideDist = 24;
-        int centerDist = 20;
-        if (!goldPos.equals("")) {
-            //showTelemetry("found gold: " + goldPos);
-            telemetry.addData("Turning to", goldPos);
-            if (goldPos.equals("Left")) {
-                //showTelemetry("turning absolute left " + knockAngle +" degrees");
+        if (haveGold) {
+            //knock left mineral
+            hinge(0);
+            intakePivot(false);
+            move(sideDist, moveSpeed);
+            move(-sideDist, moveSpeed);
+        } else {
+            //look at center mineral
+            turnAbsolute(0, turnSpeed);
+            timer.reset();
+            while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
+                telemetry.addData("Timer", timer.seconds());
+                haveGold = isGold();
+                telemetry.addData("Gold?", haveGold);
                 telemetry.update();
-                turnAbsolute(knockAngle, turnSpeed);
-                intakePivot(false);
-                move(sideDist, moveSpeed);
-                move(-sideDist, moveSpeed);
-            } else if (goldPos.equals("Center")) {
-                //showTelemetry("turning absolute 0 degrees");
-                turnAbsolute(0, turnSpeed);
+            }
+            if (haveGold) {
+                //knock center mineral
+                hinge(0);
                 intakePivot(false);
                 move(centerDist, moveSpeed);
                 move(-centerDist, moveSpeed);
-            } else if (goldPos.equals("Right")) {
-                //showTelemetry("turning absolute right " + knockAngle +" degrees");
+            } else {
+                //turn to right mineral and knock
                 turnAbsolute(-knockAngle, turnSpeed);
+                hinge(0);
                 intakePivot(false);
                 move(sideDist, moveSpeed);
                 move(-sideDist, moveSpeed);
             }
-//            showTelemetry("extending slide to knock gold");
-//            slides(5960);
-//            waitTime(500);
-//            showTelemetry("retracting slides");
-//            slides(0);
         }
-        //deafult, ram the right mineral
-        if (goldPos.equals("")) {
-            telemetry.addData("Did not find gold", "nicht gut");
-            turnAbsolute(-knockAngle, turnSpeed);
-            intakePivot(false);
-            move(sideDist, moveSpeed);
-            move(-sideDist, moveSpeed);
-        }
+        closeTfod();
         //realign self
         turnAbsolute(0, turnSpeed);
         move(-5, moveSpeed);

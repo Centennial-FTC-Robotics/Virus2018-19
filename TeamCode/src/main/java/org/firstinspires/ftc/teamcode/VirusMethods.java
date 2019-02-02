@@ -95,17 +95,13 @@ public class VirusMethods extends VirusHardware {
         }
         super.runOpMode();
         intakePivotUp = (pivot1.getPosition() != 0);
-        telemetry.addData("Point", 1);
-        telemetry.update();
         showTelemetry("init drive motors");
         driveMotors[0] = lmotor0;
         driveMotors[1] = lmotor1;
         driveMotors[2] = rmotor0;
         driveMotors[3] = rmotor1;
-        telemetry.addData("Point", 2);
-        telemetry.update();
         showTelemetry("init imu");
-        //initializeIMU();
+         initializeIMU();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
@@ -114,14 +110,10 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.retracted;
         //all servo starting positions go here
 //        marker.setPosition(0);
-        telemetry.addData("Point", 3);
-        telemetry.update();
         intakePivot(false);
 //        sifter.setPosition(0); //ball mode
         outrigger.setPosition(0);
         //need to run initVuforia and initTfod
-        telemetry.addData("Point", 4);
-        telemetry.update();
     }
 
     /* -------------- Initialization -------------- */
@@ -324,13 +316,12 @@ public class VirusMethods extends VirusHardware {
         position = Range.clip(position, 0, slideMax);
         slideLeft.setTargetPosition(position);
         slideRight.setTargetPosition(position);
-        slideLeft.setPower(0.7);
-        slideRight.setPower(0.7);
-//        while (slideLeft.isBusy() || slideRight.isBusy()) ;
-        int posDifference = Math.abs(slideLeft.getCurrentPosition()-position);
-        while (posDifference > 50);
+        slideLeft.setPower(0.8);
+        slideRight.setPower(0.8);
+        while (Math.abs(slideLeft.getCurrentPosition()-position) > 50);
         slideLeft.setPower(0);
         slideRight.setPower(0);
+//        while(slideLeft.isBusy() || slideRight.isBusy());
     }
     public boolean slidesSimul(int position){
         showTelemetry("moving slides");
@@ -422,10 +413,12 @@ public class VirusMethods extends VirusHardware {
         }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
-
-        double angleDifference = Math.abs(hinge.getCurrentPosition()-angle);
-        while (angleDifference > 3);
-        hinge.setPower(0);
+//        while (Math.abs(hinge.getCurrentPosition()-angle) > 3){
+//            telemetry.addData("Angle Diff",Math.abs(hinge.getCurrentPosition()-angle));
+//            telemetry.update();
+//        }
+//        hinge.setPower(0);
+        while (hinge.isBusy());
         outrigger.setPosition(0);
     }
     public boolean hingeSimul(double angle){
@@ -824,23 +817,32 @@ public class VirusMethods extends VirusHardware {
 
                     if (updatedRecognitions.size() == 2) {
                         int goldMineralX = -1;
+                        int goldMineralY = -1;
                         int silverMineral1X = -1;
+                        int silverMineral1Y = -1;
                         int silverMineral2X = -1;
+                        int silverMineral2Y = -1;
                         telemetry.addData("Point",3);
                         telemetry.update();
                         //gets x positions for each mineral detected
                         for (Recognition recognition : updatedRecognitions) {
                             if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                                 goldMineralX = (int) recognition.getLeft();
+                                goldMineralY = (int) recognition.getTop();
                             } else if (silverMineral1X == -1) {
                                 silverMineral1X = (int) recognition.getLeft();
+                                silverMineral1Y = (int) recognition.getTop();
                             } else {
                                 silverMineral2X = (int) recognition.getLeft();
+                                silverMineral2Y = (int)recognition.getTop();
                             }
                         }
-                        telemetry.addData("G Mineral Position", goldMineralX);
-                        telemetry.addData("S1 Mineral Position", silverMineral1X);
-                        telemetry.addData("S2 Mineral Position", silverMineral2X);
+                        telemetry.addData("G Mineral Position X", goldMineralX);
+                        telemetry.addData("G Mineral Position Y", goldMineralY);
+                        telemetry.addData("S1 Mineral Position X", silverMineral1X);
+                        telemetry.addData("S1 Mineral Position Y", silverMineral1Y);
+                        telemetry.addData("S2 Mineral Position X", silverMineral2X);
+                        telemetry.addData("S2 Mineral Position Y", silverMineral2Y);
                         //determines position of gold mineral
                         if (goldMineralX == -1) {
                             goldPosition = "Right";
@@ -856,6 +858,56 @@ public class VirusMethods extends VirusHardware {
         }
         //added:
         return goldPosition;
+    }
+    public boolean isGold(){
+        boolean gold = false;
+        if (opModeIsActive()) {
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                    if (updatedRecognitions.size() > 0) {
+                        int goldMineralX = -1;
+                        int goldMineralY = -1;
+                        int silverMineral1X = -1;
+                        int silverMineral1Y = -1;
+                        int silverMineral2X = -1;
+                        int silverMineral2Y = -1;
+                        telemetry.addData("Point",3);
+                        telemetry.update();
+                        //gets x positions for each mineral detected
+                        for (Recognition recognition : updatedRecognitions) {
+                            if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                goldMineralX = (int) recognition.getLeft();
+                                goldMineralY = (int) recognition.getTop();
+                            } else if (silverMineral1X == -1) {
+                                silverMineral1X = (int) recognition.getLeft();
+                                silverMineral1Y = (int) recognition.getTop();
+                            } else {
+                                silverMineral2X = (int) recognition.getLeft();
+                                silverMineral2Y = (int)recognition.getTop();
+                            }
+                        }
+                        telemetry.addData("G Mineral Position X", goldMineralX);
+                        telemetry.addData("G Mineral Position Y", goldMineralY);
+                        //determines position of gold mineral
+                        if (goldMineralX > 625 && goldMineralX < 825){
+                            gold = true;
+                        }
+                    }
+                    telemetry.update();
+                }
+            }
+        }
+        //added:
+        return gold;
     }
 
     public void closeTfod() {
