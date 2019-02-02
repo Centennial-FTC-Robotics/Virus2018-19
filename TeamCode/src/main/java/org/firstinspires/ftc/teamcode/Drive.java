@@ -14,7 +14,6 @@ public class Drive extends VirusMethods {
     ElapsedTime time = new ElapsedTime();
     private String action ="";
     public static boolean needTelemetry = false;
-    public static int slidePos = 0;
 
 
     public void runOpMode() throws InterruptedException {
@@ -39,37 +38,38 @@ public class Drive extends VirusMethods {
             }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
                 slidePower(-gamepad2.left_stick_y);
+                hingePower(-1.0 * gamepad2.right_stick_y, false);
             }
             //hinge follows joystick
 //            boolean usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
 //            boolean usingPivot = (gamepad2.dpad_down) || (gamepad2.dpad_up);
-            hingePower(-1.0 * gamepad2.right_stick_y, false);
+
 
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
-//            if(gamepad2.a){
-//                showTelemetry("retracting slides )button a)");
-//                retract();
-//            }
-//            if(gamepad2.start && gamepad2.b){
-//                while(gamepad2.start || gamepad2.b){
-//                    showTelemetry("waiting while initializing");
-//                    //do nothing
-//                }
-//            }
-//            if(gamepad2.b && !gamepad2.start){
-//                showTelemetry("going into standby (button b)");
-//                standby();
-//            }
-//            if(gamepad2.y){
-//                showTelemetry("going into crater (button y)");
-//                intoCrater();
-//            }
-//            if(gamepad2.x){
-//                showTelemetry("scoring (button x)");
-//                score();
-//            }
+            if(gamepad2.a){
+                showTelemetry("retracting slides )button a)");
+                retractSimul();
+            }
+            if(gamepad2.start && gamepad2.b){
+                while(gamepad2.start || gamepad2.b){
+                    showTelemetry("waiting while initializing");
+                    //do nothing
+                }
+            }
+            if(gamepad2.b && !gamepad2.start){
+                showTelemetry("going into standby (button b)");
+                standbySimul();
+            }
+            if(gamepad2.y){
+                showTelemetry("going into crater (button y)");
+                intoCraterSimul();
+            }
+            if(gamepad2.x){
+                showTelemetry("scoring (button x)");
+                scoreSimul();
+            }
             //claw down
             if(gamepad2.dpad_down){
                 intakePivot(false);
@@ -144,7 +144,7 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Intake 1", slot1);
 //            telemetry.addData("Intake 2", slot2);
             telemetry.update();
-            //idle();
+            idle();
 
         }
     }

@@ -17,7 +17,6 @@ public class DepotAuto extends VirusMethods {
         hinge(0);
         intakePivot(true);
         initVision();
-        initializeIMU();
         waitForStart();
 
         int scanAngle = 12; //positive angle is left turn
@@ -27,6 +26,7 @@ public class DepotAuto extends VirusMethods {
         String goldPos = "";
 //        showTelemetry("dehanging");
         dehang();
+        initializeIMU();
         move(5, moveSpeed);
         slides(100);
         hinge(90);
@@ -77,10 +77,10 @@ public class DepotAuto extends VirusMethods {
                 move(-sideDist, moveSpeed);
             }
 //            showTelemetry("extending slide to knock gold");
-//            slides(5960, false);
+//            slides(5960);
 //            waitTime(500);
 //            showTelemetry("retracting slides");
-//            slides(0, false);
+//            slides(0);
         }
         //deafult, ram the right mineral
         if (goldPos.equals("")) {
