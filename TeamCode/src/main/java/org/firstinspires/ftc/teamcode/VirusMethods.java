@@ -539,13 +539,9 @@ public class VirusMethods extends VirusHardware {
         sweeperVex.setPower(-1);
         outrigger.setPosition(0);
         showTelemetry("going into crater");
-        if (intakeState == intakeState.retracted) {
-            hinge(30);
-            intakePivot(true);
-        }else if (intakeState == intakeState.lander) {
-            slides(0);
-            hinge(30);
-        }
+        slides(0);
+        hinge(30);
+        intakePivot(true);
         slides(3000);
         intakePivot(false);
         hinge(0);
