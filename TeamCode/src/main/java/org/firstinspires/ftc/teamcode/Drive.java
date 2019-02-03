@@ -70,11 +70,11 @@ public class Drive extends VirusMethods {
 //            }
             //claw down
             if (gamepad2.dpad_down) {
-                intakePivot(false);
+                intakePivot(false,true);
             }
             //claw up
             if (gamepad2.dpad_up) {
-                intakePivot(true);
+                intakePivot(true,true);
             }
             //enable usingOutrigger
             if (gamepad2.right_trigger > 0) {

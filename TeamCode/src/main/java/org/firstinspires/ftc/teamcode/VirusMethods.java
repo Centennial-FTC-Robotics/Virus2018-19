@@ -110,7 +110,7 @@ public class VirusMethods extends VirusHardware {
         intakeState = intakeState.retracted;
         //all servo starting positions go here
 //        marker.setPosition(0);
-        intakePivot(false);
+        intakePivot(false, true);
 //        sifter.setPosition(0); //ball mode
         outrigger.setPosition(0);
         //need to run initVuforia and initTfod
@@ -473,7 +473,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     //if true, intake pivots up, if false, then pivots down
-    public void intakePivot(boolean up) {
+    public void intakePivot(boolean up, boolean adjust) {
         showTelemetry("moving intake pivot to up: " + up);
         lmotor0.setPower(0);
         lmotor1.setPower(0);
@@ -481,7 +481,7 @@ public class VirusMethods extends VirusHardware {
         rmotor1.setPower(0);
         if (intakePivotUp != up) {
             double originalHinge = hingeAngle();
-            if (originalHinge < 10) {
+            if (originalHinge < 10 && adjust) {
                 hinge(10);
                 telemetry.addData("Hinge", "Moving Up");
             }
@@ -494,7 +494,7 @@ public class VirusMethods extends VirusHardware {
                 pivot2.setPosition(1);
                 intakePivotUp = false;
             }
-            if (originalHinge < 10) {
+            if (originalHinge < 10 && adjust) {
                 hinge(originalHinge);
             }
         }
@@ -517,11 +517,11 @@ public class VirusMethods extends VirusHardware {
     public void dehang() {
         showTelemetry("dehanging");
         //get on ground
-        slides(500);
+        intakePivot(true,false);
         hinge(90);
         slides(3500);
         //move forward and retract slides
-        move(3,0.3f);
+        move(8,0.4f);
         slides(0);
     }
 
@@ -531,9 +531,9 @@ public class VirusMethods extends VirusHardware {
         showTelemetry("going into crater");
         slides(0);
         hinge(30);
-        intakePivot(true);
+        intakePivot(true, true);
         slides(3000);
-        intakePivot(false);
+        intakePivot(false, true);
         hinge(0);
 
         intakeState = intakeState.crater;
@@ -549,13 +549,13 @@ public class VirusMethods extends VirusHardware {
                     break;
                 case 1:
                     if (hingeSimul(30)){
-                        intakePivot(true);
+                        intakePivot(true, true);
                         intakeStep++;
                     }
                     break;
                 case 2:
                     if (slidesSimul(3000)){
-                        intakePivot(false);
+                        intakePivot(false, true);
                         intakeStep++;
                     }
                     break;
@@ -575,10 +575,10 @@ public class VirusMethods extends VirusHardware {
         sweeperVex.setPower(0);
         if (intakeState == intakeState.crater) {
             hinge(30);
-            intakePivot(true);
+            intakePivot(true, true);
         }
         slides(0);
-        intakePivot(false);
+        intakePivot(false, true);
         hinge(0);
         intakeState = intakeState.retracted;
     }
@@ -590,7 +590,7 @@ public class VirusMethods extends VirusHardware {
                 case 0:
                     if (intakeState == intakeState.crater){
                         if (hingeSimul(30)){
-                            intakePivot(true);
+                            intakePivot(true, true);
                             intakeStep++;
                         }
                     }else{
@@ -599,7 +599,7 @@ public class VirusMethods extends VirusHardware {
                     break;
                 case 1:
                     if (slidesSimul(0)){
-                        intakePivot(false);
+                        intakePivot(false, true);
                         intakeStep++;
                     }
                     break;
@@ -620,7 +620,7 @@ public class VirusMethods extends VirusHardware {
         }
         outrigger.setPosition(1);
         hinge(90);
-        intakePivot(true);
+        intakePivot(true, true);
         slides(3500);
         sweeperVex.setPower(0.4);
         intakeState = intakeState.lander;
@@ -645,7 +645,7 @@ public class VirusMethods extends VirusHardware {
                     break;
                 case 2:
                     if (hingeSimul(90)){
-                        intakePivot(true);
+                        intakePivot(true, true);
                         intakeStep++;
                     }
                     break;

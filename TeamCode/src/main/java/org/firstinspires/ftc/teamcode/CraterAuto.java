@@ -16,11 +16,10 @@ public class CraterAuto extends VirusMethods {
         super.runOpMode();
         slides(0);
         hinge(0);
-        intakePivot(true);
+        intakePivot(false, false);
         initVision();
         waitForStart();
 
-        int scanAngle = 12; //positive angle is left turn
         int knockAngle = 30;
         double turnSpeed = 0.6;
         float moveSpeed = 0.6f;
@@ -31,11 +30,7 @@ public class CraterAuto extends VirusMethods {
 
         dehang();
         initializeIMU();
-        move(5, moveSpeed);
-//        //showTelemetry("turning left 10 degrees");
-//        turnRelative(13, turnSpeed);
-        slides(0);
-        intakePivot(true);
+
         //figure out gold position
         //look at left mineral
         turnAbsolute(knockAngle, turnSpeed);
@@ -51,7 +46,7 @@ public class CraterAuto extends VirusMethods {
         if (haveGold) {
             //knock left mineral
             hinge(0);
-            intakePivot(false);
+            intakePivot(false,true);
             move(sideDist, moveSpeed);
             move(-sideDist, moveSpeed);
         } else {
@@ -67,14 +62,14 @@ public class CraterAuto extends VirusMethods {
             if (haveGold) {
                 //knock center mineral
                 hinge(0);
-                intakePivot(false);
+                intakePivot(false,true);
                 move(centerDist, moveSpeed);
                 move(-centerDist, moveSpeed);
             } else {
                 //turn to right mineral and knock
                 turnAbsolute(-knockAngle, turnSpeed);
                 hinge(0);
-                intakePivot(false);
+                intakePivot(false,true);
                 move(sideDist, moveSpeed);
                 move(-sideDist, moveSpeed);
             }
@@ -84,7 +79,7 @@ public class CraterAuto extends VirusMethods {
         turnAbsolute(0, turnSpeed);
         move(-5, moveSpeed);
         //go to wall (REPLACE WITH PROX SENSOR CODE)
-        intakePivot(false);
+        intakePivot(false,true);
         //showTelemetry("turning absolute left 45 degrees");
         turnAbsolute(45, turnSpeed);
         //showTelemetry("going forward 40 inches");
