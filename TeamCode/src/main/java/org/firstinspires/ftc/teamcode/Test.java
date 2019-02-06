@@ -109,12 +109,12 @@ public class Test extends VirusMethods {
         if(haveintake) {
             //claw up
             showTelemetry("raising intake");
-            intakePivot(true);
+            intakePivot(true, false);
             waitTime(500);
 
             //claw down
             showTelemetry("lowering intake");
-            intakePivot(false);
+            intakePivot(false, true);
             waitTime(500);
         }
         if(havesweeprs) {

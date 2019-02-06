@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="DepotBackup", group="Autonomous")
 //WE SHOULD HOPE TO NEVER USE THIS
+//goes to crater
 public class DepotBackup extends VirusMethods {
     public void runOpMode() throws InterruptedException{
         super.runOpMode();
@@ -16,7 +17,7 @@ public class DepotBackup extends VirusMethods {
         runDriveMotors(0.7f,-0.7f);
         waitTime(250);
         runDriveMotors(-0.7f,-0.7f);
-        intakePivot(true);
+        intakePivot(true, false);
         waitTime(1000);
         runDriveMotors(0,0);
     }

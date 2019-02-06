@@ -29,7 +29,7 @@ public class TensorflowTest extends VirusMethods {
             telemetry.update();
         }
         closeTfod();
-        intakePivot(true);
+        intakePivot(true, false);
         slides(500);
         hinge(0);
         if (!goldPos.equals("")) {
@@ -39,17 +39,17 @@ public class TensorflowTest extends VirusMethods {
                 //showTelemetry("turning absolute left " + knockAngle +" degrees");
                 telemetry.update();
                 turnAbsolute(knockAngle, turnSpeed);
-                intakePivot(false);
+                intakePivot(false, false);
 
             } else if (goldPos.equals("Center")) {
                 //showTelemetry("turning absolute 0 degrees");
                 turnAbsolute(0, turnSpeed);
-                intakePivot(false);
+                intakePivot(false,false);
 
             } else if (goldPos.equals("Right")) {
                 //showTelemetry("turning absolute right " + knockAngle +" degrees");
                 turnAbsolute(-knockAngle, turnSpeed);
-                intakePivot(false);
+                intakePivot(false, false);
 
             }
         }
@@ -57,7 +57,7 @@ public class TensorflowTest extends VirusMethods {
         if (goldPos.equals("")) {
             telemetry.addData("Did not find gold", "nicht gut");
             turnAbsolute(90, turnSpeed);
-            intakePivot(false);
+            intakePivot(false, false);
         }
     }
 }

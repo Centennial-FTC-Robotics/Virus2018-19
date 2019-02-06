@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="CraterBackup", group="Autonomous")
 //Qualifier 1 bad
+//goes straight forward
 public class CraterBackup extends VirusMethods {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();

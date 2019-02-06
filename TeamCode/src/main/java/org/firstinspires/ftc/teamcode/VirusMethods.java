@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -27,6 +28,7 @@ import java.util.Locale;
  */
 
 public class VirusMethods extends VirusHardware {
+
     //motors
     private final DcMotor[] leftDriveMotors = {lmotor0, lmotor1};
     private final DcMotor[] rightDriveMotors = {rmotor0, rmotor1};
@@ -39,16 +41,11 @@ public class VirusMethods extends VirusHardware {
     private final int wheelDiameterIn = 4;
 
     // slides, full = 7300
-    //int slideMax = (int)((29.0/36.0)*7300);
     int slideMax = 7000;
 
     int hingeMin = 0;
-    //private int encodersMovedStronk;
     private int encodersMovedSpeed;
 
-    //private double inchesPerEncoderStronk = (Math.PI * 1.5) / 840;
-    //private double inchesPerEncoderSpeed = (Math.PI * 1.5) / 280;
-    //private double slideInchPerStrInch = 1.0; // replace w/ actual value
     enum intakeState {
         retracted, standby, crater, lander
     }
@@ -59,14 +56,14 @@ public class VirusMethods extends VirusHardware {
     enum intake {
         Ball, Cube, None
     }
-
     intake slot1;
     intake slot2;
     intake[] intakeSlots = {slot1, slot2};
-//    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
     boolean intakePivotUp;
     // simple conversion
     private static final float mmPerInch = 25.4f;
+
+    //    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
 
     // turn
     public static final int RIGHT = 1;
@@ -84,23 +81,24 @@ public class VirusMethods extends VirusHardware {
     private VuforiaTrackables targetsRoverRuckus;
     private VuforiaLocalizer.Parameters parameters;
     private List<VuforiaTrackable> allTrackables;
-    private String action = "";
+
+    protected int knockAngle = 30;
+    protected double turnSpeed = 0.6;
+    protected float moveSpeed = 0.6f;
+    protected boolean haveGold = false;
+    protected int sideDist = 24;
+    protected int centerDist = 20;
+    protected double lookTime = 1.5;
 
     //distance calculation
     @Override
     public void runOpMode() throws InterruptedException {
-        if (Drive.needTelemetry) {
-            action = "starting virus hardware opmode";
-            telemetry.addData("task", action);
-        }
         super.runOpMode();
         intakePivotUp = (pivot1.getPosition() != 0);
-        showTelemetry("init drive motors");
         driveMotors[0] = lmotor0;
         driveMotors[1] = lmotor1;
         driveMotors[2] = rmotor0;
         driveMotors[3] = rmotor1;
-        showTelemetry("init imu");
          initializeIMU();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
@@ -119,7 +117,6 @@ public class VirusMethods extends VirusHardware {
     /* -------------- Initialization -------------- */
 
     private void initVuforia() {
-        showTelemetry("initializing vuforia");
         //create parameter object and pass it to create Vuforia engine
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -148,7 +145,6 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void initializeIMU() {
-        showTelemetry("initializing imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -178,7 +174,6 @@ public class VirusMethods extends VirusHardware {
     /* -------------- Status Methods -------------- */
 
     public boolean motorsBusy() {
-        showTelemetry("motors are busy");
         boolean busy = false;
         for (int i = 0; i < 4; i++) {
             if (driveMotors[i].isBusy()) {
@@ -274,7 +269,6 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void updateIntakes() {
-//        showTelemetry("updating intakes");
 //        int red1 = colorSensor1.red();
 //        int blue1 = colorSensor1.blue();
 //        int green1 = colorSensor1.green();
@@ -301,7 +295,6 @@ public class VirusMethods extends VirusHardware {
 
     //movement based on speeds
     public void runDriveMotors(float leftSpeed, float rightSpeed) {
-        showTelemetry("running drive motors");
         lmotor0.setPower(Range.clip(leftSpeed, -1, 1));
         lmotor1.setPower(Range.clip(leftSpeed, -1, 1));
         rmotor0.setPower(Range.clip(rightSpeed, -1, 1));
@@ -310,7 +303,6 @@ public class VirusMethods extends VirusHardware {
 
     //sets slide to certain position
     public void slides(int position) {
-        showTelemetry("moving slides");
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         position = Range.clip(position, 0, slideMax);
@@ -324,7 +316,6 @@ public class VirusMethods extends VirusHardware {
 //        while(slideLeft.isBusy() || slideRight.isBusy());
     }
     public boolean slidesSimul(int position){
-        showTelemetry("moving slides");
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         position = Range.clip(position, 0, slideMax);
@@ -348,7 +339,6 @@ public class VirusMethods extends VirusHardware {
 
     //set slide power
     public void slidePower(double power) {
-        showTelemetry("setting slide power");
         slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at max extension, only move if retracting
@@ -404,7 +394,6 @@ public class VirusMethods extends VirusHardware {
     //set hinge position
     public void hinge(double angle) {
 //        slideLock.setPosition(0);
-        showTelemetry("moving hinge to ");
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
@@ -419,7 +408,6 @@ public class VirusMethods extends VirusHardware {
         outrigger.setPosition(0);
     }
     public boolean hingeSimul(double angle){
-        showTelemetry("moving hinge to ");
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
@@ -448,7 +436,6 @@ public class VirusMethods extends VirusHardware {
             outrigger.setPosition(0);
 //            intakePivot(false);
         }
-        showTelemetry("setting hinge power");
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
         if (hinge.getCurrentPosition() >= 3700) {
@@ -474,7 +461,6 @@ public class VirusMethods extends VirusHardware {
 
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up, boolean adjust) {
-        showTelemetry("moving intake pivot to up: " + up);
         lmotor0.setPower(0);
         lmotor1.setPower(0);
         rmotor0.setPower(0);
@@ -502,7 +488,6 @@ public class VirusMethods extends VirusHardware {
 
     //drop marker
     public void dropMarker() {
-        showTelemetry("dropping marker");
 //        marker.setPosition(0.65);
 //        waitTime(500);
 //        marker.setPosition(.35);
@@ -515,7 +500,6 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void dehang() {
-        showTelemetry("dehanging");
         //get on ground
         intakePivot(true,false);
         hinge(90);
@@ -528,7 +512,6 @@ public class VirusMethods extends VirusHardware {
     public void intoCrater() {
         sweeperVex.setPower(-1);
         outrigger.setPosition(0);
-        showTelemetry("going into crater");
         slides(0);
         hinge(30);
         intakePivot(true, true);
@@ -570,7 +553,6 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void retract() {
-        showTelemetry("retracting slides");
         outrigger.setPosition(0);
         sweeperVex.setPower(0);
         if (intakeState == intakeState.crater) {
@@ -613,7 +595,6 @@ public class VirusMethods extends VirusHardware {
         }
     }
     public void score() {
-        showTelemetry("scoring");
         if (intakeState == intakeState.crater) {
             hinge(30);
             slides(0);
@@ -659,7 +640,6 @@ public class VirusMethods extends VirusHardware {
         }
     }
     public void standby() {
-        showTelemetry("going into standby");
         hinge(30);
         slides(0);
         intakeState = intakeState.standby;
@@ -685,7 +665,6 @@ public class VirusMethods extends VirusHardware {
     public void move(float distance) {
         //converting from linear distance -> wheel rotations ->
         // motor rotations -> encoder counts, then round
-        showTelemetry("moving " + distance + "inches");
         int position = convertInchToEncoder(distance);
 
         for (DcMotor motor : driveMotors) {
@@ -701,7 +680,6 @@ public class VirusMethods extends VirusHardware {
     public void move(float distance, float speed) {
         //converting from linear distance -> wheel rotations ->
         // motor rotations -> encoder counts, then round
-        showTelemetry("moving " + distance + "inches");
 //        for (int i = 0; i < driveMotors.length; i++) {
 //            driveMotors[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        }
@@ -790,7 +768,6 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void updateOrientation() {
-        showTelemetry("updating orientation");
         orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
@@ -913,8 +890,104 @@ public class VirusMethods extends VirusHardware {
         }
     }
 
-    private void showTelemetry(String action) {
-        this.action = action;
-        telemetry.update();
+    public void holdHang(){
+        slides(0);
+        hinge(0);
+        intakePivot(false, false);
+        initVision();
+        waitForStart();
+    }
+
+    //knocks gold with movement
+    public void moveKnockGold(){
+        //figure out gold position
+        //look at left mineral
+        turnAbsolute(knockAngle, turnSpeed);
+        ElapsedTime timer = new ElapsedTime();
+        telemetry.addData("Timer", timer.seconds());
+        timer.reset();
+        while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
+            telemetry.addData("Timer", timer.seconds());
+            haveGold = isGold();
+            telemetry.addData("Gold?", haveGold);
+            telemetry.update();
+        }
+        if (haveGold) {
+            //knock left mineral
+            hinge(0);
+            intakePivot(false, true);
+            move(sideDist, moveSpeed);
+            move(-sideDist, moveSpeed);
+        } else {
+            //look at center mineral
+            turnAbsolute(0, turnSpeed);
+            timer.reset();
+            while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
+                telemetry.addData("Timer", timer.seconds());
+                haveGold = isGold();
+                telemetry.addData("Gold?", haveGold);
+                telemetry.update();
+            }
+            if (haveGold) {
+                //knock center mineral
+                hinge(0);
+                intakePivot(false, true);
+                move(centerDist, moveSpeed);
+                move(-centerDist, moveSpeed);
+            } else {
+                //turn to right mineral and knock
+                turnAbsolute(-knockAngle, turnSpeed);
+                hinge(0);
+                intakePivot(false, true);
+                move(sideDist, moveSpeed);
+                move(-sideDist, moveSpeed);
+            }
+        }
+        closeTfod();
+    }
+
+    //knocks gold with slides
+    public void knockGold(){
+        //figure out gold position
+        //look at left mineral
+        turnAbsolute(knockAngle, turnSpeed);
+        ElapsedTime timer = new ElapsedTime();
+        telemetry.addData("Timer", timer.seconds());
+        timer.reset();
+        while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
+            telemetry.addData("Timer", timer.seconds());
+            haveGold = isGold();
+            telemetry.addData("Gold?", haveGold);
+            telemetry.update();
+        }
+        if (haveGold) {
+            //knock left mineral
+            hinge(0);
+            intakePivot(false, true);
+            slides(5000);
+        } else {
+            //look at center mineral
+            turnAbsolute(0, turnSpeed);
+            timer.reset();
+            while (opModeIsActive() && timer.seconds() < lookTime && !haveGold) {
+                telemetry.addData("Timer", timer.seconds());
+                haveGold = isGold();
+                telemetry.addData("Gold?", haveGold);
+                telemetry.update();
+            }
+            if (haveGold) {
+                //knock center mineral
+                hinge(0);
+                intakePivot(false, true);
+                slides(5000);
+            } else {
+                //turn to right mineral and knock
+                turnAbsolute(-knockAngle, turnSpeed);
+                hinge(0);
+                intakePivot(false, true);
+                slides(5000);
+            }
+        }
+        closeTfod();
     }
 }
