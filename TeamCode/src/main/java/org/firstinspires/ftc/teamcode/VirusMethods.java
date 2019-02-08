@@ -40,6 +40,11 @@ public class VirusMethods extends VirusHardware {
     private final int wheelSprocket = 22;
     private final int wheelDiameterIn = 4;
 
+    double stickAngle;
+    double steerSpeed;
+    double stickX;
+    double stickY;
+
     // slides, full = 7300
     int slideMax = 7000;
 
@@ -989,5 +994,22 @@ public class VirusMethods extends VirusHardware {
             }
         }
         closeTfod();
+    }
+
+    public void autoExtendIntoCrater(){
+        hinge(30);
+        turnAbsolute(0, turnSpeed);
+        slides(6000);
+        hinge(0);
+    }
+    public void steerSpeed(){
+        stickX = gamepad1.right_stick_x;
+        stickY = Range.clip(-gamepad1.right_stick_y,0,1);
+
+        stickAngle = -(Math.toDegrees(Math.acos(stickX/(Math.sqrt(Math.pow(stickX,2)+Math.pow(stickY,2)))))-90);
+        if (stickX == 0 && stickY == 0){
+            stickAngle = 0;
+        }
+        steerSpeed = stickAngle/90.0;
     }
 }

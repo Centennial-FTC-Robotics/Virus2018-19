@@ -3,32 +3,35 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "DepotAuto2", group = "Autonomous")
-public class DepotAuto2 extends EndAuto2{
+public class DepotAuto2 extends VirusMethods{
 
     @Override
     //go to depot, drop off marker, return to lander, knock gold, extend slides into crater
     public void runOpMode() throws InterruptedException {
+        super.runOpMode();
         holdHang();
         dehang();
         initializeIMU();
         goToWall();
         //go to depot
         turnRelative(-90, turnSpeed);
-        move(48, moveSpeed);
+        move(72, moveSpeed);
         //drop marker
         turnRelative(90, turnSpeed);
         dropMarker();
-        turnRelative(90, turnSpeed);
-        //go back to lander
-        move(48, moveSpeed);
-        turnRelative(90, turnSpeed);
-        move(48, moveSpeed);
-        turnAbsolute(0, turnSpeed);
+        turnRelative(135, turnSpeed);
 
         knockGold();
+        slides(0);
+        intakePivot(true,true);
+        turnAbsolute(135,turnSpeed);
+        move(72,moveSpeed);
+        //do we have clearance when intake up
 
         //slides into crater
-        super.runOpMode();
+        hinge(30);
+        slides(2000);
+        hinge(0);
     }
 
     private void goToWall(){

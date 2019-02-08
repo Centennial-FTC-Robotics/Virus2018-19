@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "CraterAuto2", group = "Autonomous")
-public class CraterAuto2 extends EndAuto2 {
+public class CraterAuto2 extends VirusMethods {
     @Override
     //go to depot, drop off marker, return to lander, knock gold, extend slides into crater
     public void runOpMode() throws InterruptedException {
+        super.runOpMode();
         holdHang();
         dehang();
         initializeIMU();
@@ -26,12 +27,12 @@ public class CraterAuto2 extends EndAuto2 {
         move(36, moveSpeed);
         turnRelative(-45, turnSpeed);
         move(50, moveSpeed);
-        turnAbsolute(90, turnSpeed);
+        turnAbsolute(0, turnSpeed);
 
         knockGold();
 
         //slides into crater
-        super.runOpMode();
+        autoExtendIntoCrater();
     }
 
 }
