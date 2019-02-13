@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.sun.tools.javac.util.Position;
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
 //0 is front, 1 is back
@@ -124,7 +125,6 @@ public class Drive extends VirusMethods {
                     runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));
                 }
             }
-
             telemetry.addData("Left slide", slideLeft.getCurrentPosition());
             telemetry.addData("Right slide", slideRight.getCurrentPosition());
 //            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
@@ -133,8 +133,8 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Left Slide Encoder", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right Slide Encoder", slideRight.getCurrentPosition());
             telemetry.addData("Heading", getRotationinDimension(('Z')));
-//            telemetry.addData("Slide Left", slideLeft.getCurrentPosition());
-//            telemetry.addData("Slide Right", slideRight.getCurrentPosition());
+            telemetry.addData("X pos", imu.getPosition().x);
+            telemetry.addData("Y pos", imu.getPosition().y);
 //            telemetry.addData("Gamepad 2 Right Joystick y", gamepad2.right_stick_y);
 //            telemetry.addData("Gamepad 2 Right Joystick x", gamepad2.right_stick_x);
 //            telemetry.addData("Gamepad 2 Left Joystick y", gamepad2.left_stick_y);
