@@ -437,11 +437,11 @@ public class VirusMethods extends VirusHardware {
         if (power > 0 && !override){
 //            slideLock.setPosition(0);
             outrigger.setPosition(1);
-            intakePivot(true,true);
+            //intakePivot(true,true);
         }else {
-            if(power < 0){
-                intakePivot(false,true);
-            }
+            //if(power < 0){
+                //intakePivot(false,true);
+            //}
             outrigger.setPosition(0);
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
