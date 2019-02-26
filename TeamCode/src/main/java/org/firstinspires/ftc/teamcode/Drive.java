@@ -37,7 +37,7 @@ public class Drive extends VirusMethods {
                 leftSpeed = Range.clip(moveSpeed - (turnSpeed*moveSpeed), -1, 1);
                 rightSpeed = Range.clip(moveSpeed + (turnSpeed*moveSpeed), -1, 1);
             }else{
-                leftSpeed = Range.clip(-turnSpeed, -1, 1);
+                leftSpeed = Range.clip(turnSpeed, -1, 1);
                 rightSpeed = Range.clip(turnSpeed, -1, 1);
             }
             factor = (float) (0.7 + 0.3 * gamepad1.right_trigger - 0.5 * gamepad1.left_trigger);
