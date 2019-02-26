@@ -18,7 +18,7 @@ public class Basic extends LinearOpMode {
     DcMotor rmotor0;
     DcMotor rmotor1;
     DcMotor hinge;
-    ColorSensor colorSensor1, colorSensor2;
+//    ColorSensor colorSensor1, colorSensor2;
     DcMotor slideLeft;
     DcMotor slideRight;
 
@@ -33,7 +33,7 @@ public class Basic extends LinearOpMode {
     VirusMethods.intake slot1;
     VirusMethods.intake slot2;
     VirusMethods.intake[] intakeSlots = {slot1, slot2};
-    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
+//    ColorSensor[] colorSensors = {colorSensor1, colorSensor2};
 
     public void runOpMode() throws InterruptedException {
         lmotor0 = hardwareMap.dcMotor.get("lmotor0");
@@ -41,8 +41,8 @@ public class Basic extends LinearOpMode {
         rmotor0 = hardwareMap.dcMotor.get("rmotor0");
         rmotor1 = hardwareMap.dcMotor.get("rmotor1");
         hinge = hardwareMap.dcMotor.get("hinge");
-        colorSensor1 = hardwareMap.colorSensor.get("colorSensor1");
-        colorSensor2 = hardwareMap.colorSensor.get("colorSensor2");
+//        colorSensor1 = hardwareMap.colorSensor.get("colorSensor1");
+//        colorSensor2 = hardwareMap.colorSensor.get("colorSensor2");
         slideLeft = hardwareMap.dcMotor.get("slideLeft");
         slideRight = hardwareMap.dcMotor.get("slideRight");
 
@@ -70,9 +70,9 @@ public class Basic extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            red1 = colorSensor1.red();
-            green1 = colorSensor1.green();
-            blue1 = colorSensor1.blue();
+//            red1 = colorSensor1.red();
+//            green1 = colorSensor1.green();
+//            blue1 = colorSensor1.blue();
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y-Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x,-1,1);
             rightSpeed = Range.clip(Math.abs(gamepad1.left_stick_y)*gamepad1.left_stick_y+Math.abs(gamepad1.right_stick_x)*gamepad1.right_stick_x, -1,1);
             factor = (float) (0.7 + 0.3*gamepad1.right_trigger -0.5*gamepad1.left_trigger);
@@ -96,27 +96,27 @@ public class Basic extends LinearOpMode {
     }
 
     public void updateIntakes(){
-        int red1 = colorSensor1.red();
-        int blue1 = colorSensor1.blue();
-        int green1 = colorSensor1.green();
-        int red2 = colorSensor1.red();
-        int blue2 = colorSensor1.blue();
-        int green2 = colorSensor1.green();
-
-        if (percentDiff(red1,blue1) > 70){
-            slot1 = VirusMethods.intake.Cube;
-        }else if ((red1 + green1 + blue1)/3 > 30){
-            slot1 = VirusMethods.intake.Ball;
-        }else{
-            slot1 = VirusMethods.intake.None;
-        }
-        if (percentDiff(red2,blue2) > 70){
-            slot2 = VirusMethods.intake.Cube;
-        }else if ((red2 + green2 + blue2)/3 > 30){
-            slot2 = VirusMethods.intake.Ball;
-        }else{
-            slot2 = VirusMethods.intake.None;
-        }
+//        int red1 = colorSensor1.red();
+//        int blue1 = colorSensor1.blue();
+//        int green1 = colorSensor1.green();
+//        int red2 = colorSensor1.red();
+//        int blue2 = colorSensor1.blue();
+//        int green2 = colorSensor1.green();
+//
+//        if (percentDiff(red1,blue1) > 70){
+//            slot1 = VirusMethods.intake.Cube;
+//        }else if ((red1 + green1 + blue1)/3 > 30){
+//            slot1 = VirusMethods.intake.Ball;
+//        }else{
+//            slot1 = VirusMethods.intake.None;
+//        }
+//        if (percentDiff(red2,blue2) > 70){
+//            slot2 = VirusMethods.intake.Cube;
+//        }else if ((red2 + green2 + blue2)/3 > 30){
+//            slot2 = VirusMethods.intake.Ball;
+//        }else{
+//            slot2 = VirusMethods.intake.None;
+//        }
     }
 
     public void runDriveMotors(float leftSpeed, float rightSpeed) {

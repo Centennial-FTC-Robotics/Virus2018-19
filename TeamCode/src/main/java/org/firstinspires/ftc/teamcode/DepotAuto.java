@@ -16,7 +16,7 @@ public class DepotAuto extends StartAuto {
 
     private void goToCrater(){
         //go straight to crater
-        turnRelative(90, turnSpeed);
+        turnAbsolute(90, turnSpeed);
         move(30, moveSpeed);
     }
 }

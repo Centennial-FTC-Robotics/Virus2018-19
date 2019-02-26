@@ -116,7 +116,7 @@ public class VirusMethods extends VirusHardware {
 //        marker.setPosition(0);
         intakePivot(false, true);
 //        sifter.setPosition(0); //ball mode
-        outrigger.setPosition(0);
+        outrigger.setPosition(1);
         //need to run initVuforia and initTfod
     }
 
@@ -404,21 +404,21 @@ public class VirusMethods extends VirusHardware {
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
         if (hinge.getCurrentPosition() < position){
-            outrigger.setPosition(1);
+            outrigger.setPosition(0);
         }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
         while (Math.abs(hinge.getCurrentPosition()-position) > 50);
         hinge.setPower(0);
 //        while (hinge.isBusy());
-        outrigger.setPosition(0);
+        outrigger.setPosition(1);
     }
     public boolean hingeSimul(double angle){
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
         if (hinge.getCurrentPosition() < position){
-            outrigger.setPosition(1);
+            outrigger.setPosition(0);
         }
         hinge.setTargetPosition(position);
         hinge.setPower(1);
@@ -426,23 +426,23 @@ public class VirusMethods extends VirusHardware {
         double posDifference = Math.abs(hinge.getCurrentPosition()-position);
         if (posDifference < 50) {
             hinge.setPower(0);
-            outrigger.setPosition(0);
+            outrigger.setPosition(1);
             return true;
         }
         return false;
     }
 
     //set hinge power
-    public void hingePower(double power, boolean override) {
-        if (power > 0 && !override){
+    public void hingePower(double power) {
+        if (power > 0){
 //            slideLock.setPosition(0);
-            outrigger.setPosition(1);
+            outrigger.setPosition(0);
             //intakePivot(true,true);
         }else {
             //if(power < 0){
                 //intakePivot(false,true);
             //}
-            outrigger.setPosition(0);
+            outrigger.setPosition(1);
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
@@ -494,6 +494,32 @@ public class VirusMethods extends VirusHardware {
         }
     }
 
+    public void intakePivotSimul(boolean up) {
+        if (intakePivotUp != up) {
+            double originalHinge = hingeAngle();
+            if (originalHinge < 10) {
+                if (hinge.getCurrentPosition() < 10) {
+                    hingePower(1);
+                } else {
+                    hingePower(0);
+                }
+                telemetry.addData("Hinge", "Moving Up");
+            }
+            if (up) {
+                pivot1.setPosition(.65);
+                pivot2.setPosition(.35);
+                intakePivotUp = true;
+            } else {
+                pivot1.setPosition(0);
+                pivot2.setPosition(1);
+                intakePivotUp = false;
+            }
+            if (originalHinge < 10) {
+                hinge(originalHinge);
+            }
+        }
+    }
+
     //drop marker
     public void dropMarker() {
 //        marker.setPosition(0.65);
@@ -507,19 +533,19 @@ public class VirusMethods extends VirusHardware {
 //        marker.setPosition(0);
     }
 
-    public void dehang() {
+    public void dehang(float distance) {
         //get on ground
         intakePivot(true,false);
         hinge(90);
         slides(3500);
         //move forward and retract slides
-        move(8,0.4f);
+        move(distance,0.4f);
         slides(0);
     }
 
     public void intoCrater() {
         sweeperVex.setPower(-1);
-        outrigger.setPosition(0);
+        outrigger.setPosition(1);
         slides(0);
         hinge(30);
         intakePivot(true, true);
@@ -531,7 +557,7 @@ public class VirusMethods extends VirusHardware {
     }
     public void intoCraterSimul() {
         if(intakeState != intakeState.crater){
-            outrigger.setPosition(0);
+            outrigger.setPosition(1);
             switch (intakeStep) {
                 case 0:
                     if (slidesSimul(0)){
@@ -561,7 +587,7 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void retract() {
-        outrigger.setPosition(0);
+        outrigger.setPosition(1);
         sweeperVex.setPower(0);
         if (intakeState == intakeState.crater) {
             hinge(30);
@@ -574,7 +600,7 @@ public class VirusMethods extends VirusHardware {
     }
     public void retractSimul(){
         if(intakeState != intakeState.retracted){
-            outrigger.setPosition(0);
+            outrigger.setPosition(1);
             sweeperVex.setPower(0);
             switch (intakeStep) {
                 case 0:
@@ -607,7 +633,7 @@ public class VirusMethods extends VirusHardware {
             hinge(30);
             slides(0);
         }
-        outrigger.setPosition(1);
+        outrigger.setPosition(0);
         hinge(90);
         intakePivot(true, true);
         slides(3500);
@@ -628,7 +654,7 @@ public class VirusMethods extends VirusHardware {
                     break;
                 case 1:
                     if (slidesSimul(0)){
-                        outrigger.setPosition(1);
+                        outrigger.setPosition(0);
                         intakeStep++;
                     }
                     break;
@@ -738,26 +764,46 @@ public class VirusMethods extends VirusHardware {
     }
 
     public void turnAbsolute(double targetAngle, double speed) {
+//        double currentAngle = getHeading();
+//
+//        int direction;
+//        if (targetAngle != currentAngle) {
+//
+//            double angleDifference = getAngleDist(targetAngle, currentAngle);
+//            direction = getAngleDir(targetAngle, currentAngle);
+//            double turnRate = (angleDifference * speed) / 90;
+//
+//            while (opModeIsActive() && angleDifference > 5) {
+//                runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
+//                angleDifference = getAngleDist(targetAngle, getRotationinDimension('Z'));
+//                direction = getAngleDir(targetAngle, getRotationinDimension(('Z')));
+//                turnRate = (angleDifference * speed) / 90;
+//                telemetry.addData("Current Angle", getRotationinDimension(('Z')));
+//                telemetry.update();
+//            }
+//
+//            runDriveMotors(0, 0);
+//        }
         double currentAngle = getHeading();
-
         int direction;
-        if (targetAngle != currentAngle) {
+        double turnRate = 0;
+        double P = 1d / 60d;
+        double minSpeed = 0;
+        double maxSpeed = 0.2d;
+        double tolerance = 0.5;
 
-            double angleDifference = getAngleDist(targetAngle, currentAngle);
+        double error = getAngleDist(targetAngle, currentAngle);
+        while (opModeIsActive() && error > tolerance) {
+            currentAngle = getRotationinDimension('Z');
             direction = getAngleDir(targetAngle, currentAngle);
-            double turnRate = (angleDifference * speed) / 90;
-
-            while (opModeIsActive() && angleDifference > 5) {
-                runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
-                angleDifference = getAngleDist(targetAngle, getRotationinDimension('Z'));
-                direction = getAngleDir(targetAngle, getRotationinDimension(('Z')));
-                turnRate = (angleDifference * speed) / 90;
-                telemetry.addData("Current Angle", getRotationinDimension(('Z')));
-                telemetry.update();
-            }
-
-            runDriveMotors(0, 0);
+            error = getAngleDist(targetAngle, currentAngle);
+            turnRate = Range.clip(P * error, minSpeed, maxSpeed);
+            runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
+            /*telemetry.addData("error: ", error);
+            telemetry.addData("currentAngle: ", getRotationinDimension('Z'));
+            telemetry.update();*/
         }
+        runDriveMotors(0, 0);
     }
 
     /* -------------- Procedure -------------- */

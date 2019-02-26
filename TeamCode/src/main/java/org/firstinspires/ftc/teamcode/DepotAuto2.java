@@ -10,16 +10,16 @@ public class DepotAuto2 extends VirusMethods{
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         holdHang();
-        dehang();
+        dehang(8);
         initializeIMU();
         goToWall();
         //go to depot
-        turnRelative(-90, turnSpeed);
-        move(72, moveSpeed);
+        turnAbsolute(-45, turnSpeed);
+        move(60, moveSpeed);
         //drop marker
-        turnRelative(90, turnSpeed);
+        turnAbsolute(45, turnSpeed);
         dropMarker();
-        turnRelative(135, turnSpeed);
+        turnAbsolute(180, turnSpeed);
 
         knockGold();
         slides(0);

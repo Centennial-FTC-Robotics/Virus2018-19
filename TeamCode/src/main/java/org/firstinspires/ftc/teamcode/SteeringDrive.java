@@ -19,10 +19,6 @@ public class SteeringDrive extends VirusMethods {
 
 
     public void runOpMode() throws InterruptedException {
-        if (needTelemetry) {
-            action = "starting drive opmode";
-            telemetry.addData("task", action);
-        }
         super.runOpMode();
         time.reset();
         sifter.setPosition(0);
@@ -30,6 +26,7 @@ public class SteeringDrive extends VirusMethods {
 
         while (opModeIsActive()) {
             //drive system
+            //set steer speed
             steerSpeed();
             stickAngle = Math.toDegrees(Math.atan(-gamepad1.right_stick_y/gamepad1.right_stick_x));
             leftSpeed = Range.clip(Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y + (float)steerSpeed, -1, 1);
@@ -40,7 +37,7 @@ public class SteeringDrive extends VirusMethods {
             }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
                 slidePower(-gamepad2.left_stick_y);
-                hingePower(-1.0 * gamepad2.right_stick_y, false);
+                hingePower(-1.0 * gamepad2.right_stick_y);
             }
             //hinge follows joystick
 //            boolean usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);

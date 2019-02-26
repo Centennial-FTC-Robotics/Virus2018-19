@@ -9,23 +9,28 @@ public class CraterAuto2 extends VirusMethods {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         holdHang();
-        dehang();
+        dehang(13f);
         initializeIMU();
         //turn towards wall
-        turnAbsolute(90, turnSpeed);
+//        turnAbsolute(90, turnSpeed);
+        turnRelative(90, turnSpeed);
         //go to wall
-        move(50, moveSpeed);
+        move(47, moveSpeed);
         //turn toward depot
-        turnRelative(45, turnSpeed);
+//        turnRelative(45, turnSpeed);
+        turnAbsolute(135,turnSpeed);
         //go to depot
         move(36, moveSpeed);
         //drop marker
-        turnRelative(90, turnSpeed);
+//        turnRelative(90, turnSpeed);
+        turnAbsolute(-135,turnSpeed);
         dropMarker();
-        turnRelative(90, turnSpeed);
+//        turnRelative(90, turnSpeed);
+        turnAbsolute(-45, turnSpeed);
         //go back to lander
-        move(36, moveSpeed);
-        turnRelative(-45, turnSpeed);
+        move(34, moveSpeed);
+//        turnRelative(-45, turnSpeed);
+        turnAbsolute(-90,turnSpeed);
         move(50, moveSpeed);
         turnAbsolute(0, turnSpeed);
 
