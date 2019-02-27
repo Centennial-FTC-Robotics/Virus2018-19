@@ -30,40 +30,42 @@ public class Drive extends VirusMethods {
         waitForStart();
 
         while (opModeIsActive()) {
+            usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
             //drive system
-            turnSpeed = (float) -Math.pow(gamepad1.right_stick_x, 3);
-            moveSpeed = (float) Math.pow(gamepad1.left_stick_y,3);
-            if(moveSpeed != 0){
-                leftSpeed = Range.clip(moveSpeed - (turnSpeed*moveSpeed), -1, 1);
-                rightSpeed = Range.clip(moveSpeed + (turnSpeed*moveSpeed), -1, 1);
-            }else{
-                leftSpeed = Range.clip(turnSpeed, -1, 1);
-                rightSpeed = Range.clip(turnSpeed, -1, 1);
+            moveSpeed = (float) Math.pow(gamepad1.left_stick_y, 3);
+            turnSpeed = (float) ((float) -(-0.5*moveSpeed + 1)*Math.pow(gamepad1.right_stick_x, 3));
+            if (moveSpeed != 0) {
+                leftSpeed = moveSpeed - (turnSpeed);
+                rightSpeed = moveSpeed + (turnSpeed);
+            } else {
+                turnSpeed = (float) -Math.pow(gamepad1.right_stick_x, 3);
+                leftSpeed = turnSpeed;
+                rightSpeed = -turnSpeed;
             }
             factor = (float) (0.7 + 0.3 * gamepad1.right_trigger - 0.5 * gamepad1.left_trigger);
             if (!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x != 0)) {
-                runDriveMotors(factor * leftSpeed, factor * rightSpeed);
+                runDriveMotors(Range.clip(factor * leftSpeed,-1, 1), Range.clip(factor * rightSpeed, -1, 1));
             }
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
                 slidePower(-gamepad2.left_stick_y);
                 hingePower(-1.0 * gamepad2.right_stick_y);
             }
             //hinge follows joystick
-//            boolean usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
+
 //            boolean usingPivot = (gamepad2.dpad_down) || (gamepad2.dpad_up);
 
 
             //hinge.setPower(gamepad2.right_stick_y);
             //lift up to height of lander (to put minerals in)
 
-            if(gamepad2.a){
+            if (gamepad2.a) {
                 slidePower(-1);
             }
-            if(gamepad2.b){
+            if (!gamepad2.start && gamepad2.b) {
                 hingePower(1);
-                if (slideLeft.getCurrentPosition() < 3500){
+                if (slideLeft.getCurrentPosition() < 3500) {
                     slidePower(1);
-                }else{
+                } else {
                     slidePower(0);
                 }
             }
@@ -77,29 +79,29 @@ public class Drive extends VirusMethods {
 //                showTelemetry("going into standby (button b)");
 //                standbySimul();
 //            }
-//            if(gamepad2.y){
-//                showTelemetry("going into crater (button y)");
-//                intoCraterSimul();
-//            }
-//            if(gamepad2.x){
-//                showTelemetry("scoring (button x)");
-//                scoreSimul();
-//            }
+            if(gamepad2.y){
+                //hanging height
+                if (slideLeft.getCurrentPosition() < 1500) {
+                    slidePower(0.5);
+                } else {
+                    slidePower(0);
+                }
+            }
             //claw down
             if (gamepad2.dpad_down) {
-                intakePivot(false,true);
+                intakePivot(false, true);
             }
             //claw up
             if (gamepad2.dpad_up) {
-                intakePivot(true,true);
+                intakePivot(true, true);
             }
             //enable usingOutrigger
             if (gamepad2.right_trigger > 0) {
-                outrigger.setPosition(0);
+                outrigger.setPosition(1);
             }
             //disable usingOutrigger
             if (gamepad2.left_trigger > 0) {
-                outrigger.setPosition(1);
+                outrigger.setPosition(0);
             }
             //sweepers
             if (gamepad2.right_bumper) {
@@ -155,8 +157,12 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Gamepad 2 Right Joystick x", gamepad2.right_stick_x);
 //            telemetry.addData("Gamepad 2 Left Joystick y", gamepad2.left_stick_y);
 //            telemetry.addData("Gamepad 2 Left Joystick x", gamepad2.left_stick_x);
-//            telemetry.addData("Intake 1", slot1);
-//            telemetry.addData("Intake 2", slot2);
+            telemetry.addData("Gamepad 1 Right Joystick x", gamepad1.right_stick_x);
+            telemetry.addData("Gamepad 1 Left Joystick y", gamepad1.left_stick_y);
+            telemetry.addData("Turn speed", turnSpeed);
+            telemetry.addData("Move speed", moveSpeed);
+            telemetry.addData("Left speed", leftSpeed);
+            telemetry.addData("Right speed", rightSpeed);
             telemetry.update();
             idle();
 

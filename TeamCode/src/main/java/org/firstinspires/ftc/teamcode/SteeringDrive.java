@@ -25,6 +25,7 @@ public class SteeringDrive extends VirusMethods {
         waitForStart();
 
         while (opModeIsActive()) {
+            usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
             //drive system
             //set steer speed
             steerSpeed();

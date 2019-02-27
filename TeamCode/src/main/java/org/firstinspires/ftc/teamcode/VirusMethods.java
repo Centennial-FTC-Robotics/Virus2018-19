@@ -47,7 +47,7 @@ public class VirusMethods extends VirusHardware {
     int direction = 0;
 
     // slides, full = 7300
-    int slideMax = 7000;
+    int slideMax = 6900;
 
     int hingeMin = 0;
     private int encodersMovedSpeed;
@@ -66,6 +66,7 @@ public class VirusMethods extends VirusHardware {
     intake slot2;
     intake[] intakeSlots = {slot1, slot2};
     boolean intakePivotUp;
+    boolean usingOutrigger = false;
     // simple conversion
     private static final float mmPerInch = 25.4f;
 
@@ -434,15 +435,19 @@ public class VirusMethods extends VirusHardware {
 
     //set hinge power
     public void hingePower(double power) {
-        if (power > 0){
-//            slideLock.setPosition(0);
-            outrigger.setPosition(0);
-            //intakePivot(true,true);
-        }else {
-            //if(power < 0){
-                //intakePivot(false,true);
-            //}
-            outrigger.setPosition(1);
+        if (!usingOutrigger) {
+            if (power > 0){
+                outrigger.setPosition(0);
+            }else {
+                outrigger.setPosition(1);
+            }
+        }
+        if (power != 0){
+            if (hingeAngle() > 80){
+                intakePivot(true, false);
+            } else {
+                intakePivot(false, true);
+            }
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
