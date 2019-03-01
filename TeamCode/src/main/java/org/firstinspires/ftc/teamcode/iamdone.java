@@ -14,11 +14,7 @@ public class iamdone extends VirusMethods{
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        slides(1000);
-        hinge(45);
-        initializeIMU();
-        initVision();
-        waitForStart();
-        slides(0);
+        holdHang();
+        dehang(5);
     }
 }

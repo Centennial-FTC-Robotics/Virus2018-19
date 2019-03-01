@@ -15,28 +15,23 @@ public class Drive extends VirusMethods {
     float moveSpeed;
     float turnSpeed;
     ElapsedTime time = new ElapsedTime();
-    private String action = "";
-    public static boolean needTelemetry = false;
 
 
     public void runOpMode() throws InterruptedException {
-        if (needTelemetry) {
-            action = "starting drive opmode";
-            telemetry.addData("task", action);
-        }
         super.runOpMode();
         time.reset();
         sifter.setPosition(0);
         waitForStart();
 
         while (opModeIsActive()) {
+            updateOrientation();
             usingOutrigger = (gamepad2.right_trigger > 0) || (gamepad2.left_trigger > 0);
             //drive system
             moveSpeed = (float) Math.pow(gamepad1.left_stick_y, 3);
-            turnSpeed = (float) ((float) -(-0.5*moveSpeed + 1)*Math.pow(gamepad1.right_stick_x, 3));
+            turnSpeed = (float) ((float) -(-Math.abs(-0.3*moveSpeed) + 1)*Math.pow(gamepad1.right_stick_x, 3));
             if (moveSpeed != 0) {
-                leftSpeed = moveSpeed - (turnSpeed);
-                rightSpeed = moveSpeed + (turnSpeed);
+                leftSpeed = moveSpeed + (turnSpeed);
+                rightSpeed = moveSpeed - (turnSpeed);
             } else {
                 turnSpeed = (float) -Math.pow(gamepad1.right_stick_x, 3);
                 leftSpeed = turnSpeed;
@@ -59,13 +54,17 @@ public class Drive extends VirusMethods {
             //lift up to height of lander (to put minerals in)
 
             if (gamepad2.a) {
+                //retract
                 slidePower(-1);
             }
             if (!gamepad2.start && gamepad2.b) {
+                //score spheres
                 hingePower(1);
-                if (slideLeft.getCurrentPosition() < 3500) {
+                if (slideLeft.getCurrentPosition() < 3250) {
                     slidePower(1);
-                } else {
+                } else if(slideLeft.getCurrentPosition() > 3400) {
+                    slidePower(-1);
+                }else {
                     slidePower(0);
                 }
             }
@@ -80,8 +79,20 @@ public class Drive extends VirusMethods {
 //                standbySimul();
 //            }
             if(gamepad2.y){
+                //score cubes on other side
+                hingePower(1);
+                if (slideLeft.getCurrentPosition() < 3450) {
+                    slidePower(1);
+                } else if(slideLeft.getCurrentPosition() > 3600) {
+                    slidePower(-1);
+                }else {
+                    slidePower(0);
+                }
+            }
+
+            if(gamepad2.x){
                 //hanging height
-                if (slideLeft.getCurrentPosition() < 1500) {
+                if (slideLeft.getCurrentPosition() < 1700) {
                     slidePower(0.5);
                 } else {
                     slidePower(0);
@@ -150,19 +161,19 @@ public class Drive extends VirusMethods {
 //            telemetry.addData("Intake state", intakeState);
 //            telemetry.addData("Left Slide Encoder", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right Slide Encoder", slideRight.getCurrentPosition());
-//            telemetry.addData("Heading", getRotationinDimension(('Z')));
+            telemetry.addData("Heading", getHeading());
 //            telemetry.addData("X pos", imu.getPosition().x);
 //            telemetry.addData("Y pos", imu.getPosition().y);
 //            telemetry.addData("Gamepad 2 Right Joystick y", gamepad2.right_stick_y);
 //            telemetry.addData("Gamepad 2 Right Joystick x", gamepad2.right_stick_x);
 //            telemetry.addData("Gamepad 2 Left Joystick y", gamepad2.left_stick_y);
 //            telemetry.addData("Gamepad 2 Left Joystick x", gamepad2.left_stick_x);
-            telemetry.addData("Gamepad 1 Right Joystick x", gamepad1.right_stick_x);
-            telemetry.addData("Gamepad 1 Left Joystick y", gamepad1.left_stick_y);
-            telemetry.addData("Turn speed", turnSpeed);
-            telemetry.addData("Move speed", moveSpeed);
-            telemetry.addData("Left speed", leftSpeed);
-            telemetry.addData("Right speed", rightSpeed);
+//            telemetry.addData("Gamepad 1 Right Joystick x", gamepad1.right_stick_x);
+//            telemetry.addData("Gamepad 1 Left Joystick y", gamepad1.left_stick_y);
+//            telemetry.addData("Turn speed", turnSpeed);
+//            telemetry.addData("Move speed", moveSpeed);
+//            telemetry.addData("Left speed", leftSpeed);
+//            telemetry.addData("Right speed", rightSpeed);
             telemetry.update();
             idle();
 

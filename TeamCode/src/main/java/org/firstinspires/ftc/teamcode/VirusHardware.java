@@ -24,18 +24,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 
 public abstract class VirusHardware extends LinearOpMode {
-    DcMotor lmotor0;
-    DcMotor lmotor1;
-    DcMotor rmotor0;
-    DcMotor rmotor1;
+    DcMotorEx lmotor0;
+    DcMotorEx lmotor1;
+    DcMotorEx rmotor0;
+    DcMotorEx rmotor1;
     DcMotor slideLeft;
     DcMotor slideRight;
     DcMotor hinge;
     //DcMotor sweeper; //
     CRServo sweeperVex;
-//    Servo  slideLock; //
+    Servo  slideLock; //
     Servo pivot1, pivot2;
-//    Servo marker; //
+    Servo marker;
     Servo sifter;
     Servo outrigger;
 //    ColorSensor colorSensor1, colorSensor2;
@@ -59,9 +59,11 @@ public abstract class VirusHardware extends LinearOpMode {
 //        rmotor0 = (DcMotorEx)hardwareMap.dcMotor.get("rmotor0");
 //        rmotor1 = (DcMotorEx)hardwareMap.dcMotor.get("rmotor1");
         hinge = hardwareMap.dcMotor.get("hinge");
-//        slideLock = hardwareMap.servo.get("slideLock");
+        slideLock = hardwareMap.servo.get("slideLock");
         pivot1 = hardwareMap.servo.get("pivot1");
         pivot2 = hardwareMap.servo.get("pivot2");
+        marker = hardwareMap.servo.get("marker");
+
 //        //sweeper = hardwareMap.dcMotor.get("sweeper");
         sweeperVex = hardwareMap.crservo.get("sweeperVex");
 //        marker = hardwareMap.servo.get("marker");

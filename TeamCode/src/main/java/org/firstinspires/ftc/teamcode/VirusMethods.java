@@ -106,7 +106,7 @@ public class VirusMethods extends VirusHardware {
         driveMotors[1] = lmotor1;
         driveMotors[2] = rmotor0;
         driveMotors[3] = rmotor1;
-         initializeIMU();
+        initializeIMU();
         initialHeading = orientation.firstAngle;
         initialRoll = orientation.secondAngle;
         initialPitch = orientation.thirdAngle;
@@ -114,7 +114,7 @@ public class VirusMethods extends VirusHardware {
         encodersMovedSpeed = 0;
         intakeState = intakeState.retracted;
         //all servo starting positions go here
-//        marker.setPosition(0);
+        marker.setPosition(1);
         intakePivot(false, true);
 //        sifter.setPosition(0); //ball mode
         outrigger.setPosition(1);
@@ -322,6 +322,15 @@ public class VirusMethods extends VirusHardware {
         slideRight.setPower(0);
 //        while(slideLeft.isBusy() || slideRight.isBusy());
     }
+    public void slidesNoWait(int position) {
+        slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        position = Range.clip(position, 0, slideMax);
+        slideLeft.setTargetPosition(position);
+        slideRight.setTargetPosition(position);
+        slideLeft.setPower(0.8);
+        slideRight.setPower(0.8);
+    }
     public boolean slidesSimul(int position){
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -400,7 +409,7 @@ public class VirusMethods extends VirusHardware {
 
     //set hinge position
     public void hinge(double angle) {
-//        slideLock.setPosition(0);
+        slideLock.setPosition(0);
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
         int position = (int) (angle * (3700 / 90));
@@ -435,6 +444,7 @@ public class VirusMethods extends VirusHardware {
 
     //set hinge power
     public void hingePower(double power) {
+        slideLock.setPosition(0);
         if (!usingOutrigger) {
             if (power > 0){
                 outrigger.setPosition(0);
@@ -474,10 +484,6 @@ public class VirusMethods extends VirusHardware {
 
     //if true, intake pivots up, if false, then pivots down
     public void intakePivot(boolean up, boolean adjust) {
-        lmotor0.setPower(0);
-        lmotor1.setPower(0);
-        rmotor0.setPower(0);
-        rmotor1.setPower(0);
         if (intakePivotUp != up) {
             double originalHinge = hingeAngle();
             if (originalHinge < 10 && adjust) {
@@ -527,15 +533,10 @@ public class VirusMethods extends VirusHardware {
 
     //drop marker
     public void dropMarker() {
-//        marker.setPosition(0.65);
-//        waitTime(500);
-//        marker.setPosition(.35);
-//        marker.setPosition(0.65);
-//        waitTime(500);
-//        marker.setPosition(.35);
-//        marker.setPosition(0.65);
-//        waitTime(500);
-//        marker.setPosition(0);
+        marker.setPosition(0.1);
+        waitTime(500);
+        marker.setPosition(1);
+        waitTime(500);
     }
 
     public void dehang(float distance) {
@@ -544,8 +545,14 @@ public class VirusMethods extends VirusHardware {
         hinge(90);
         slides(3500);
         //move forward and retract slides
-        move(distance,0.4f);
-        slides(0);
+        moveNoWait(distance,0.4f);
+        int position = 0;
+        slidesNoWait(position);
+        waitForMotors();
+        runDriveMotors(0, 0);
+        while (Math.abs(slideLeft.getCurrentPosition()-position) > 50);
+        slideLeft.setPower(0);
+        slideRight.setPower(0);
     }
 
     public void intoCrater() {
@@ -741,6 +748,11 @@ public class VirusMethods extends VirusHardware {
         rmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        lmotor0.setTargetPositionTolerance(50);
+        lmotor1.setTargetPositionTolerance(50);
+        rmotor0.setTargetPositionTolerance(50);
+        rmotor1.setTargetPositionTolerance(50);
+
         lmotor0.setTargetPosition(-position);
         lmotor1.setTargetPosition(-position);
         rmotor0.setTargetPosition(-position);
@@ -761,7 +773,41 @@ public class VirusMethods extends VirusHardware {
         rmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void moveNoWait(float distance, float speed) {
+        lmotor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lmotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rmotor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rmotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        waitForMotors();
+
+        int position = convertInchToEncoder(distance);
+
+//        for (int i = 0; i < driveMotors.length; i++) {
+//            driveMotors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            driveMotors[i].setTargetPosition(-position);
+//            driveMotors[i].setPower(speed);
+//        }
+        lmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lmotor0.setTargetPositionTolerance(50);
+        lmotor1.setTargetPositionTolerance(50);
+        rmotor0.setTargetPositionTolerance(50);
+        rmotor1.setTargetPositionTolerance(50);
+
+        lmotor0.setTargetPosition(-position);
+        lmotor1.setTargetPosition(-position);
+        rmotor0.setTargetPosition(-position);
+        rmotor1.setTargetPosition(-position);
+
+        lmotor0.setPower(speed);
+        lmotor1.setPower(speed);
+        rmotor0.setPower(speed);
+        rmotor1.setPower(speed);
+    }
 
     public void turnRelative(double targetChange, double speed) {
 
@@ -952,6 +998,7 @@ public class VirusMethods extends VirusHardware {
     public void holdHang(){
         slides(0);
         hinge(0);
+        slideLock.setPosition(0.35);
         intakePivot(false, false);
         initVision();
         waitForStart();
