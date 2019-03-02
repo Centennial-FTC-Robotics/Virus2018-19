@@ -38,9 +38,10 @@ public class Drive extends VirusMethods {
                 rightSpeed = -turnSpeed;
             }
             factor = (float) (0.7 + 0.3 * gamepad1.right_trigger - 0.5 * gamepad1.left_trigger);
-            if (!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x != 0)) {
-                runDriveMotors(Range.clip(factor * leftSpeed,-1, 1), Range.clip(factor * rightSpeed, -1, 1));
-            }
+//            if (!(intakeState == intakeState.crater && leftSpeed == 0 && rightSpeed == 0 && gamepad2.left_stick_x != 0)) {
+//
+//            }
+            runDriveMotors(Range.clip(factor * leftSpeed,-1, 1), Range.clip(factor * rightSpeed, -1, 1));
             if (!gamepad2.a && !gamepad2.b && !gamepad2.x && !gamepad2.y) {
                 slidePower(-gamepad2.left_stick_y);
                 hingePower(-1.0 * gamepad2.right_stick_y);
@@ -59,35 +60,22 @@ public class Drive extends VirusMethods {
             }
             if (!gamepad2.start && gamepad2.b) {
                 //score spheres
+                int lower = 3250;
+                int upper = 3400;
                 hingePower(1);
-                if (slideLeft.getCurrentPosition() < 3250) {
-                    slidePower(1);
-                } else if(slideLeft.getCurrentPosition() > 3400) {
-                    slidePower(-1);
-                }else {
+                int pos = slideLeft.getCurrentPosition();
+
+                if(pos >= lower && pos <= upper){
                     slidePower(0);
+                }else if (slideLeft.getCurrentPosition() < lower) {
+                    slidePower(1);
+                } else if(slideLeft.getCurrentPosition() > upper) {
+                    slidePower(-1);
                 }
             }
-//            if(gamepad2.start && gamepad2.b){
-//                while(gamepad2.start || gamepad2.b){
-//                    showTelemetry("waiting while initializing");
-//                    //do nothing
-//                }
-//            }
-//            if(gamepad2.b && !gamepad2.start){
-//                showTelemetry("going into standby (button b)");
-//                standbySimul();
-//            }
             if(gamepad2.y){
-                //score cubes on other side
-                hingePower(1);
-                if (slideLeft.getCurrentPosition() < 3450) {
-                    slidePower(1);
-                } else if(slideLeft.getCurrentPosition() > 3600) {
-                    slidePower(-1);
-                }else {
-                    slidePower(0);
-                }
+                //standby
+                hinge(10);
             }
 
             if(gamepad2.x){
@@ -148,16 +136,16 @@ public class Drive extends VirusMethods {
             if (gamepad1.a && gamepad1.b) {
                 hingeMin = 0;
             }
-            if ((intakeState == intakeState.crater) || (slideLeft.getCurrentPosition() > 1000 && hingeAngle() < 45)) {
-                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
-                    double turnFactor = 0.3 - 0.207 * (slideLeft.getCurrentPosition() / 7300);
-                    runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));
-                }
-            }
+//            if ((intakeState == intakeState.crater) || (slideLeft.getCurrentPosition() > 1000 && hingeAngle() < 45)) {
+//                if (gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0) {
+//                    double turnFactor = 0.3 - 0.207 * (slideLeft.getCurrentPosition() / 7300);
+//                    runDriveMotors((float) (-turnFactor * gamepad2.left_stick_x), (float) (turnFactor * gamepad2.left_stick_x));
+//                }
+//            }
 //            telemetry.addData("Left slide", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right slide", slideRight.getCurrentPosition());
-//            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
-//            telemetry.addData("Hinge Angle", hingeAngle());
+            telemetry.addData("Hinge Encoder", hinge.getCurrentPosition());
+            telemetry.addData("Hinge Angle", hingeAngle());
 //            telemetry.addData("Intake state", intakeState);
 //            telemetry.addData("Left Slide Encoder", slideLeft.getCurrentPosition());
 //            telemetry.addData("Right Slide Encoder", slideRight.getCurrentPosition());

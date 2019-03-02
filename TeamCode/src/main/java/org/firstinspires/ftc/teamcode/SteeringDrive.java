@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "SteeringTeleOp", group = "TeleOp")
+//@TeleOp(name = "SteeringTeleOp", group = "TeleOp")
 //0 is front, 1 is back
 //l means left, r means right
 public class SteeringDrive extends VirusMethods {

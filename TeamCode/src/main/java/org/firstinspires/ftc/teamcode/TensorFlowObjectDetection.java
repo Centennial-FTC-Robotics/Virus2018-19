@@ -51,7 +51,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "TensorFlow Object Detection", group = "TeleOp")
+//@TeleOp(name = "TensorFlow Object Detection", group = "TeleOp")
 //@Disabled
 public class TensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";

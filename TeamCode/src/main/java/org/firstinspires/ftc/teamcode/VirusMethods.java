@@ -45,11 +45,13 @@ public class VirusMethods extends VirusHardware {
     double stickX;
     double stickY;
     int direction = 0;
+    double startAngle = 0;
 
     // slides, full = 7300
     int slideMax = 6900;
 
     int hingeMin = 0;
+    int hingeMax = 3800;
     private int encodersMovedSpeed;
 
     enum intakeState {
@@ -233,9 +235,17 @@ public class VirusMethods extends VirusHardware {
     }
 
     public double getHeading() {
-
-
-        return Double.parseDouble(formatAngle(orientation.angleUnit, orientation.firstAngle));
+        updateOrientation();
+        double adjustedHeading = Double.parseDouble(formatAngle(orientation.angleUnit, orientation.firstAngle)) - startAngle;
+        if (adjustedHeading > 180){
+            adjustedHeading -= 360;
+        }else if (adjustedHeading < -180){
+            adjustedHeading += 360;
+        }
+        return adjustedHeading;
+    }
+    public void zeroAngle(){
+        startAngle = getRotationinDimension('Z');
     }
     /* -------------- Processing -------------- */
 
@@ -404,7 +414,7 @@ public class VirusMethods extends VirusHardware {
 
     //get hinge position
     public int hingeAngle() {
-        return (int) ((hinge.getCurrentPosition() * 90) / 3700);
+        return (int) ((hinge.getCurrentPosition() * 90) / hingeMax);
     }
 
     //set hinge position
@@ -412,7 +422,7 @@ public class VirusMethods extends VirusHardware {
         slideLock.setPosition(0);
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
-        int position = (int) (angle * (3700 / 90));
+        int position = (int) (angle * (hingeMax / 90));
         if (hinge.getCurrentPosition() < position){
             outrigger.setPosition(0);
         }
@@ -426,7 +436,7 @@ public class VirusMethods extends VirusHardware {
     public boolean hingeSimul(double angle){
         hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         angle = Range.clip(angle, 0, 90);
-        int position = (int) (angle * (3700 / 90));
+        int position = (int) (angle * (hingeMax / 90));
         if (hinge.getCurrentPosition() < position){
             outrigger.setPosition(0);
         }
@@ -461,7 +471,7 @@ public class VirusMethods extends VirusHardware {
         }
         hinge.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //if at 90 degrees, only move if decreasing angle
-        if (hinge.getCurrentPosition() >= 3700) {
+        if (hinge.getCurrentPosition() >= hingeMax) {
             if (power < 0) {
                 hinge.setPower(power);
             } else {
@@ -550,9 +560,10 @@ public class VirusMethods extends VirusHardware {
         slidesNoWait(position);
         waitForMotors();
         runDriveMotors(0, 0);
-        while (Math.abs(slideLeft.getCurrentPosition()-position) > 50);
-        slideLeft.setPower(0);
-        slideRight.setPower(0);
+        lmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rmotor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rmotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void intoCrater() {
@@ -844,12 +855,22 @@ public class VirusMethods extends VirusHardware {
         double tolerance = 0.5;
 
         double error = getAngleDist(targetAngle, currentAngle);
+        telemetry.addData("Error", error);
+        telemetry.update();
         while (opModeIsActive() && error > tolerance) {
-            currentAngle = getRotationinDimension('Z');
+            telemetry.addData("Point", 1);
+            telemetry.update();
+            currentAngle = getHeading();
             direction = getAngleDir(targetAngle, currentAngle);
             error = getAngleDist(targetAngle, currentAngle);
             turnRate = Range.clip(P * error, minSpeed, maxSpeed);
+            telemetry.addData("Turn rate", turnRate);
+            telemetry.update();
+            telemetry.addData("Direction", direction);
+            telemetry.update();
             runDriveMotors((float) -(turnRate * direction), (float) (turnRate * direction));
+            telemetry.addData("Point", 2);
+            telemetry.update();
             /*telemetry.addData("error: ", error);
             telemetry.addData("currentAngle: ", getRotationinDimension('Z'));
             telemetry.update();*/
@@ -1056,6 +1077,8 @@ public class VirusMethods extends VirusHardware {
     public void knockGold(){
         //figure out gold position
         //look at left mineral
+        slides(200);
+        intakePivot(false, true);
         turnAbsolute(knockAngle, turnSpeed);
         ElapsedTime timer = new ElapsedTime();
         telemetry.addData("Timer", timer.seconds());
@@ -1069,7 +1092,6 @@ public class VirusMethods extends VirusHardware {
         if (haveGold) {
             //knock left mineral
             hinge(0);
-            intakePivot(false, true);
             slides(5000);
         } else {
             //look at center mineral
@@ -1084,13 +1106,11 @@ public class VirusMethods extends VirusHardware {
             if (haveGold) {
                 //knock center mineral
                 hinge(0);
-                intakePivot(false, true);
                 slides(5000);
             } else {
                 //turn to right mineral and knock
                 turnAbsolute(-knockAngle, turnSpeed);
                 hinge(0);
-                intakePivot(false, true);
                 slides(5000);
             }
         }

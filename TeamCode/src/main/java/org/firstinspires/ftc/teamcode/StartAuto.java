@@ -7,7 +7,7 @@ public class StartAuto extends VirusMethods {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         holdHang();
-        dehang(8);
+        dehang(14);
         initializeIMU();
         moveKnockGold();
         goToWall();

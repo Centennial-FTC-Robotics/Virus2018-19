@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="TrainingTeleOp", group="TeleOp")
+//@TeleOp(name="TrainingTeleOp", group="TeleOp")
 //0 is front, 1 is back
 //l means left, r means right
 public class TrainingDrive extends TrainingHardware {

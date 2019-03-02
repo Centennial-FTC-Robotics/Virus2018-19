@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Controller", group = "TeleOp")
+//@TeleOp(name = "Controller", group = "TeleOp")
 public class Controller extends LinearOpMode {
     float leftSpeed;
     float rightSpeed;

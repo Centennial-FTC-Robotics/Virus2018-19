@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 /**
  * Created by keert on 12/8/2018.
  */
-@Autonomous(name="Test", group="Autonomous")
+//@Autonomous(name="Test", group="Autonomous")
 public class Test extends VirusMethods {
 
     public static String action = "";

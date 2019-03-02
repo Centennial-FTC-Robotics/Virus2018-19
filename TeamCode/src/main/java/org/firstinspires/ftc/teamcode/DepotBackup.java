@@ -8,17 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class DepotBackup extends VirusMethods {
     public void runOpMode() throws InterruptedException{
         super.runOpMode();
-        runDriveMotors(-0.7f,-0.7f);
-        waitTime(500);
-        runDriveMotors(0.7f,-0.7f);
-        waitTime(500);
-        runDriveMotors(-0.7f,-0.7f);
-        waitTime(1500);
-        runDriveMotors(0.7f,-0.7f);
-        waitTime(250);
-        runDriveMotors(-0.7f,-0.7f);
-        intakePivot(true, false);
-        waitTime(1000);
-        runDriveMotors(0,0);
+        holdHang();
+        dehang(33);
     }
 }

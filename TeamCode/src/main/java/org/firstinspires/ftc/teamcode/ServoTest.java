@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by keert on 12/8/2018.
  */
-@Autonomous(name="ServoTest", group="Autonomous")
+//@Autonomous(name="ServoTest", group="Autonomous")
 public class ServoTest extends VirusMethods {
     String goldPos = "bad";
     public void runOpMode()throws InterruptedException {

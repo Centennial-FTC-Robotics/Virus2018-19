@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by keert on 1/25/2019.
  */
 
-@Autonomous(name="EmergencyCraterAuto", group="Autonomous")
+//@Autonomous(name="EmergencyCraterAuto", group="Autonomous")
 //just dehangs and goes to crater
 public class EmergencyCraterAuto extends VirusMethods {
     public void runOpMode() throws InterruptedException {

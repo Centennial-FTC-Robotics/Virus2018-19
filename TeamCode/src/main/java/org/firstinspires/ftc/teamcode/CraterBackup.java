@@ -8,8 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class CraterBackup extends VirusMethods {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        runDriveMotors(-0.7f,-0.7f);
-        waitTime(1500);
-        runDriveMotors(0,0);
+        holdHang();
+        dehang(33);
+        hinge(45);
+        slides(5000);
+        hinge(0);
     }
 }

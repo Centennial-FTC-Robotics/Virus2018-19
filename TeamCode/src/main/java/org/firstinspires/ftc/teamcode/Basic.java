@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 //with hinge, lag: 2
 //with color sensors, lag: 5
 //with slides, lag: 5
-@TeleOp(name="Basic", group="TeleOp")
+//@TeleOp(name="Basic", group="TeleOp")
 public class Basic extends LinearOpMode {
 
     DcMotor lmotor0;

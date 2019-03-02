@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "TensorflowTest", group = "Autonomous")
+//@Autonomous(name = "TensorflowTest", group = "Autonomous")
 public class TensorflowTest extends VirusMethods {
     @Override
     public void runOpMode() throws InterruptedException {
